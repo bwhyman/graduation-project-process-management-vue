@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { exportExcelFile } from '@/services/ExcelUtils'
 import { parseStudent } from '@/services/ParseUtils'
 import { getStudentsService, getUnselectedStudentsService } from '@/services/TeacherService'
 import type { User } from '@/types/type'
@@ -26,7 +25,7 @@ const exportStudents = () => {
         指导教师: temp.teacherName
       }
     })
-    exportExcelFile(result)
+    import('@/services/ExcelUtils').then(({ exportExcelFile }) => exportExcelFile(result))
   })
 }
 </script>

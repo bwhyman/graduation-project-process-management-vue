@@ -1,22 +1,11 @@
 import axios from '@/axios'
-import { useUserStore } from '@/stores/UserStore'
-import type {
-  PSDetail,
-  PSDetailTeacher,
-  ProcessFile,
-  ProcessScore,
-  ResultVO,
-  Student,
-  User
-} from '@/types/type'
-import { useGroupStudentsStore } from '@/stores/GroupInfosStore'
-import { usePSDetailsStore } from '@/stores/PSDetailsStore'
-import { parseStudents, parseTeachers } from './ParseUtils'
-import { PA_TUTOR } from './Const'
+import type { ProcessFile, ProcessScore, ResultVO, User } from '@/types/type'
+import { useGroupInfosStore } from '@/stores/GroupInfosStore'
+import { parseProcessScores, parseStudents, parseTeachers } from './ParseUtils'
 
 // 加载指导学生/组学生/组评审，信息
 export const getInfosService = async () => {
-  const groupStore = useGroupStudentsStore()
+  const groupStore = useGroupInfosStore()
   const gstudentsR = storeToRefs(groupStore).groupStudentsS
   const gteachersR = storeToRefs(groupStore).groupTeachersS
   const tutortudentsR = storeToRefs(groupStore).tutortudentsS
@@ -28,8 +17,8 @@ export const getInfosService = async () => {
   const teas = resp.data.data?.teachers
   const tutorStus = resp.data.data?.tutorStudents
 
-  stus && parseStudents(stus) && (gstudentsR.value = parseStudents(stus))
-  teas && parseTeachers(teas) && (gteachersR.value = parseTeachers(teas))
+  stus && (gstudentsR.value = parseStudents(stus))
+  teas && (gteachersR.value = parseTeachers(teas))
   tutorStus && parseStudents(tutorStus) && (tutortudentsR.value = parseStudents(tutorStus))
   // 学生按答辩顺序排序
   gstudentsR.value.sort((x, y) => (x.queueNumber ?? 0) - (y.queueNumber ?? 0))
@@ -37,98 +26,32 @@ export const getInfosService = async () => {
 
 //
 export const listProcessScoresService = async (pid: string, auth: string) => {
-  const psDetailsStore = usePSDetailsStore()
-  const psDetailsMap = storeToRefs(psDetailsStore).psDetailsMap
-  const psDetails = psDetailsMap.value.get(pid)
-  if (psDetails) return
-
-  const useStore = useUserStore()
-  const group = useStore.userS.groupNumber
-  const groupStore = useGroupStudentsStore()
-  const gstudentsR = storeToRefs(groupStore).groupStudentsS
-  const tutorstudentR = storeToRefs(groupStore).tutortudentsS
-  const watchGroupStudents = watch(
-    [gstudentsR, tutorstudentR],
-    async () => {
-      if (gstudentsR.value.length > 0) {
-        const resp = await axios.get<ResultVO<{ processScores: ProcessScore[] }>>(
-          `teacher/processes/${pid}/group/${group}`
-        )
-        const processScores = resp.data.data?.processScores
-        const stus = auth == PA_TUTOR ? tutorstudentR.value : gstudentsR.value
-        const psDetails = collectPSDetails(processScores ?? [], stus)
-        psDetailsMap.value.set(pid, psDetails)
-        // 停止监听
-        watchGroupStudents()
-      }
-    },
-    { immediate: true }
+  const resp = await axios.get<ResultVO<{ processScores: ProcessScore[] }>>(
+    `teacher/processes/${pid}/types/${auth}`
   )
+  return parseProcessScores(resp.data.data?.processScores ?? [])
 }
 
 //
-export const addPorcessScore = async (ps: {
-  score: number
-  processId: string
-  studentId: string
-}) => {
+export const addPorcessScore = async (
+  ps: {
+    score: number
+    processId: string
+    studentId: string
+  },
+  auth: string
+) => {
   const resp = await axios.post<ResultVO<{ processScores: ProcessScore[] }>>(
-    'teacher/processscores',
+    `teacher/processscores/types/${auth}`,
     ps
   )
-  const groupStore = useGroupStudentsStore()
-  const gStudentsR = storeToRefs(groupStore).groupStudentsS
-
-  const processScores = resp.data.data?.processScores
-  const details = collectPSDetails(processScores ?? [], gStudentsR.value ?? [])
-
-  const psDetailsStore = usePSDetailsStore()
-  const psDetailsMap = storeToRefs(psDetailsStore).psDetailsMap
-  psDetailsMap.value.set(ps.processId, details)
+  return parseProcessScores(resp.data.data?.processScores ?? [])
 }
 
-//
-const collectPSDetails = (processScores: ProcessScore[], gStudents: Student[]) => {
-  const psDetails: PSDetail[] = []
-  gStudents?.forEach((stu) => {
-    const psd: PSDetail = {
-      name: stu.name,
-      studentId: stu.id,
-      teacherName: stu.teacherName,
-      projectTitle: stu.projectTitle,
-      teachers: [],
-      score: 0
-    }
-
-    processScores?.forEach((ps) => {
-      if (ps.studentId == stu.id) {
-        const detail = JSON.parse(ps.detail as string) as PSDetailTeacher[]
-        let scoreTemp = 0
-        detail.forEach((d) => {
-          scoreTemp += d.score
-          psd.teachers?.push({ teacherId: d.teacherId, score: d.score, teacherName: d.teacherName })
-        })
-
-        if (psd.teachers) {
-          psd.score = scoreTemp / psd.teachers?.length
-        }
-      }
-    })
-
-    psd.score = ~~((psd.score ?? 0) * 100) / 100
-    psDetails.push(psd)
-  })
-
-  return psDetails
-}
-
-export const listPorcessFilesService = async (pid: string) => {
-  const useStore = useUserStore()
-  const group = useStore.userS.groupNumber
+export const listPorcessFilesService = async (pid: string, auth: string) => {
   const resp = await axios.get<ResultVO<{ processFiles: ProcessFile[] }>>(
-    `teacher/processfiles/${pid}/group/${group}`
+    `teacher/processfiles/${pid}/types/${auth}`
   )
-
   return resp.data.data?.processFiles
 }
 

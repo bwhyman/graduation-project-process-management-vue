@@ -1,22 +1,69 @@
 <script setup lang="ts">
 import {
-  listProcessScoresService,
   addPorcessScore,
   listPorcessFilesService,
-  getProcessFile
+  getProcessFile,
+  listProcessScoresService
 } from '@/services/TeacherService'
-import { usePSDetailsStore } from '@/stores/PSDetailsStore'
 import { useUserStore } from '@/stores/UserStore'
-import type { PSDetail, ProcessFile } from '@/types/type'
+import type { PSDetailTeacher, ProcessFile, ProcessScore, Student } from '@/types/type'
+import { useGroupInfosStore } from '@/stores/GroupInfosStore'
 import { Link } from '@element-plus/icons-vue'
+import { PA_REVIEW } from '@/services/Const'
 
+interface PSDetail extends Student {
+  score?: number
+  psTeachers?: PSDetailTeacher[]
+  teacherScore?: number
+}
 const props = defineProps<{ pid: string; auth: string }>()
-
-listProcessScoresService(props.pid, props.auth)
-
 const processFilesR = ref<ProcessFile[]>([])
+const groupInfosStore = useGroupInfosStore()
+const userStore = useUserStore()
+const userR = storeToRefs(userStore).userS
 
-listPorcessFilesService(props.pid).then((pfs) => {
+const currentPStudentsR: Ref<PSDetail[]> =
+  props.auth == PA_REVIEW
+    ? storeToRefs(groupInfosStore).groupStudentsS
+    : storeToRefs(groupInfosStore).tutortudentsS
+
+watch(
+  currentPStudentsR,
+  () => {
+    if (currentPStudentsR.value.length > 0) {
+      listProcessScoresService(props.pid, props.auth).then((pses) => {
+        pses && collectPS(pses)
+      })
+    }
+  },
+  { immediate: true }
+)
+
+// 聚合评分数据
+const collectPS = (pses: ProcessScore[]) => {
+  ;(currentPStudentsR.value as PSDetail[]).forEach((stuD) => {
+    let temp = 0
+    let tScore
+    stuD.psTeachers = []
+    stuD.score = temp
+    stuD.teacherScore = tScore
+
+    const teachDs = pses.find((ps) => ps.studentId == stuD.id)
+    if (!teachDs) return
+    stuD.psTeachers = teachDs.detail as PSDetailTeacher[]
+
+    stuD.psTeachers.forEach((t) => {
+      temp += t.score
+      if (t.teacherId == userR.value.id) {
+        stuD.teacherScore = t.score
+      }
+    })
+    stuD.score = temp / stuD.psTeachers.length
+    stuD.score = ~~(stuD.score * 100) / 100
+  })
+}
+
+listPorcessFilesService(props.pid, props.auth).then((pfs) => {
   pfs && (processFilesR.value = pfs)
 })
 
@@ -24,16 +71,7 @@ const processFileC = computed(
   () => (sid: string) => processFilesR.value.find((pf) => pf.studentId == sid)
 )
 
-const userStore = useUserStore()
-const userR = storeToRefs(userStore).userS
-
-const psdetailsStore = usePSDetailsStore()
-const psDetailsMap = storeToRefs(psdetailsStore).psDetailsMap
 const reviewScore = ref(0)
-// 当前登录评审打分
-const tutorScoreC = computed(
-  () => (psd: PSDetail) => psd.teachers?.find((t) => t.teacherId == userR.value.id)?.score
-)
 
 const scoreCountsC = computed<{
   score_90: number
@@ -48,8 +86,9 @@ const scoreCountsC = computed<{
     sc_70 = 0,
     sc_60 = 0,
     sc_last = 0,
-    len = psDetailsMap.value.get(props.pid)?.length ?? 0
-  psDetailsMap.value.get(props.pid)?.forEach((psd) => {
+    len = currentPStudentsR.value.length ?? 0
+
+  currentPStudentsR.value.forEach((psd) => {
     const stand = 89.5
     if (!psd.score || psd.score < stand - 30) {
       sc_last++
@@ -80,14 +119,14 @@ const scoreCountsC = computed<{
   }
 })
 
-const addProcessScoreF = (row: PSDetail, event: KeyboardEvent) => {
+const addProcessScoreF = (row: Student, event: KeyboardEvent) => {
   const se: { score: number; processId: string; studentId: string; teacherName: string } = {
-    studentId: row.studentId ?? '',
+    studentId: row.id ?? '',
     processId: props.pid,
     score: reviewScore.value,
     teacherName: userR.value.name ?? ''
   }
-  addPorcessScore(se)
+  addPorcessScore(se, props.auth).then((pses) => collectPS(pses))
   ;(event.target as HTMLInputElement)?.blur()
 }
 
@@ -112,7 +151,7 @@ const clickAttachF = (pname: string) => {
         ； 共
         <el-tag>{{ scoreCountsC.len }}</el-tag>
       </div>
-      <el-table :data="psDetailsMap.get(props.pid)">
+      <el-table :data="currentPStudentsR">
         <el-table-column type="index" label="#" width="50" />
         <el-table-column min-width="220">
           <template #default="scope">
@@ -129,24 +168,27 @@ const clickAttachF = (pname: string) => {
               class="attach"
               :size="24"
               color="red"
-              v-if="processFileC(scope.row.sid)"
-              @click="clickAttachF(processFileC(scope.row.sid)?.detail ?? '')">
+              v-if="processFileC(scope.row.id)"
+              @click="clickAttachF(processFileC(scope.row.id)?.detail ?? '')">
               <Link />
             </el-icon>
           </template>
         </el-table-column>
         <el-table-column label="平均分">
           <template #default="scope">
-            {{ scope.row.score }} / {{ scope.row.teachers.length }}
+            {{ scope.row.score }} /
+            {{ scope.row.psTeachers && scope.row.psTeachers.length }}
             <br />
-            <span v-for="(t, index) of scope.row.teachers" :key="index">{{ t.teacherName }};</span>
+            <span v-for="(t, index) of scope.row.psTeachers" :key="index">
+              {{ t.teacherName }};
+            </span>
           </template>
         </el-table-column>
         <el-table-column label="评分">
           <template #default="scope">
             <el-input
               @keyup.enter="addProcessScoreF(scope.row, $event)"
-              :value="tutorScoreC(scope.row)"
+              :value="scope.row.teacherScore"
               v-model.number="reviewScore"
               style="width: 70px"
               type="number"

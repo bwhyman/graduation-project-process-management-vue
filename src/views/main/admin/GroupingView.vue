@@ -84,14 +84,14 @@ const grouping = () => {
 }
 // 方法好笨
 // 如果有小组学生数小于下取值，或大于上取值。重新分组
-watch(groupMessageR, () => {
-  const g = groupMessageR.value.find(
-    (gm) =>
-      gm.length < Math.floor(studentsR.value.length / groupNumber) ||
-      gm.length > Math.ceil(studentsR.value.length / groupNumber)
-  )
-  g && grouping()
-})
+// watch(groupMessageR, () => {
+//   const g = groupMessageR.value.find(
+//     (gm) =>
+//       gm.length < Math.floor(studentsR.value.length / groupNumber) ||
+//       gm.length > Math.ceil(studentsR.value.length / groupNumber)
+//   )
+//   g && grouping()
+// })
 
 const updateGroup = () => {
   const stus: { number: string; groupNumber: number; queueNumber: number }[] = []

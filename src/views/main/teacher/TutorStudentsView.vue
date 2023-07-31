@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useGroupStudentsStore } from '@/stores/GroupInfosStore'
+import { useGroupInfosStore } from '@/stores/GroupInfosStore'
 import StudentsSelectedView from './StudentsSelectedView.vue'
 
-const groupStore = useGroupStudentsStore()
+const groupStore = useGroupInfosStore()
 const studentsR = storeToRefs(groupStore).tutortudentsS
 </script>
 <template>

@@ -1,4 +1,4 @@
-import type { Process, Student, Teacher, User } from '@/types/type'
+import type { Process, ProcessScore, Student, Teacher, User } from '@/types/type'
 // =====  反序列化     =========
 export const parseStudents = (students: User[]) => {
   const stus = students as Student[]
@@ -56,4 +56,11 @@ export const parseProcesses = (processes: Process[]) => {
     ps.studentAttach && (ps.studentAttach = JSON.parse(ps.studentAttach as string))
   })
   return processes
+}
+
+export const parseProcessScores = (pses: ProcessScore[]) => {
+  pses.forEach((ps) => {
+    ps.detail && (ps.detail = JSON.parse(ps.detail as string))
+  })
+  return pses
 }

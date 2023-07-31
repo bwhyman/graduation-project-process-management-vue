@@ -39,6 +39,7 @@ export const selectTeacher = async (tid: string) => {
   return { teachers }
 }
 
+//
 export const uploadFileService = async (fdata: FormData) => {
   const resp = await axios.post('student/upload', fdata)
   messageR.value = '上传成功'

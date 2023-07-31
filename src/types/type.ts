@@ -46,18 +46,9 @@ export interface ProcessItem {
 export interface ProcessScore {
   id?: string
   studentId: string
-  detail: string
+  detail: string | PSDetailTeacher[]
   processId: string
   score?: number
-}
-
-export interface PSDetail {
-  name?: string
-  teacherName?: string
-  studentId?: string
-  projectTitle?: string
-  score?: number
-  teachers?: PSDetailTeacher[]
 }
 
 export interface PSDetailTeacher {
