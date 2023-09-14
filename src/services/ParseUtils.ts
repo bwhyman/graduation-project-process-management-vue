@@ -33,7 +33,8 @@ export const parseTeachers = (teachers: User[]) => {
     if (!tea.teacher) return
     const tP = JSON.parse(tea.teacher as string)
     tea.total = tP.total
-    tea.count = tP.count
+    tea.A = tP.A
+    tea.C = tP.C
     tea.teacher = undefined
   })
   return teachs
@@ -42,8 +43,9 @@ export const parseTeacher = (teacher: User) => {
   const teach = teacher as Teacher
   if (teacher.teacher) {
     const tP = JSON.parse(teacher.teacher as string)
-    teach.count = tP.count
     teach.total = tP.total
+    teach.A = tP.A
+    teach.C = tP.C
     teach.teacher = undefined
   }
 

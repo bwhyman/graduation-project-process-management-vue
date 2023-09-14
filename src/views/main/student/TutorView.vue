@@ -32,7 +32,7 @@ const confirm = () => {
 }
 </script>
 <template>
-  <el-row class="my-row">
+  <!-- <el-row class="my-row">
     <el-col style="margin-bottom: 10px">
       <el-steps :active="-1" finish-status="success" style="width: 100%" align-center>
         <el-step title="Wait"></el-step>
@@ -47,7 +47,7 @@ const confirm = () => {
         {{ startTimeR.replace('T', ' ').substring(0, 16) }}
       </el-tag>
     </el-col>
-  </el-row>
+  </el-row> -->
   <el-row class="my-row" v-if="teachersR.length > 0">
     <el-col>
       <el-table :data="teachersR">
@@ -75,11 +75,26 @@ const confirm = () => {
   <el-row class="my-row" v-if="userR?.teacherId">
     <el-col>
       <div style="margin: auto; padding-bottom: 10px" align="center">
-        请尽快与指导教师：
-        <el-tag type="danger" effect="light">
-          {{ userR.teacherName }}
-        </el-tag>
-        老师联系
+        <p>
+          指导教师：
+          <el-tag type="danger" effect="light">
+            {{ userR.teacherName }}
+          </el-tag>
+          老师
+        </p>
+        <p v-if="userR.projectTitle">
+          {{ userR.projectTitle }}
+        </p>
+        <p v-if="userR.groupNumber">
+          毕设答辩组：
+          <el-tag type="success" effect="light">
+            {{ userR.groupNumber }}
+          </el-tag>
+          ； 答辩顺序：
+          <el-tag type="success" effect="light">
+            {{ userR.queueNumber }}
+          </el-tag>
+        </p>
       </div>
     </el-col>
   </el-row>

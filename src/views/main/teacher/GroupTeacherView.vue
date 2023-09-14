@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useGroupInfosStore } from '@/stores/GroupInfosStore'
+import { useInfosStore } from '@/stores/InfosStore'
 import { useUserStore } from '@/stores/UserStore'
 
 const useStore = useUserStore()
 const userR = storeToRefs(useStore).userS
 
-const groupStore = useGroupInfosStore()
+const groupStore = useInfosStore()
 const groupTeachersR = storeToRefs(groupStore).groupTeachersS
 </script>
 <template>

@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { useGroupInfosStore } from '@/stores/GroupInfosStore'
-import StudentsSelectedView from './StudentsSelectedView.vue'
+import { useInfosStore } from '@/stores/InfosStore'
 
-const groupStore = useGroupInfosStore()
+const groupStore = useInfosStore()
 const studentsR = storeToRefs(groupStore).tutortudentsS
 </script>
 <template>
@@ -22,11 +21,6 @@ const studentsR = storeToRefs(groupStore).tutortudentsS
           </template>
         </el-table-column>
       </el-table>
-    </el-col>
-  </el-row>
-  <el-row class="my-row">
-    <el-col>
-      <StudentsSelectedView />
     </el-col>
   </el-row>
 </template>

@@ -5,5 +5,9 @@ import { listProcessesService } from '@/services'
 listProcessesService()
 </script>
 <template>
-  <RouterView />
+  <RouterView v-slot="{ Component }">
+    <KeepAlive>
+      <component :is="Component" :key="$route.path" />
+    </KeepAlive>
+  </RouterView>
 </template>

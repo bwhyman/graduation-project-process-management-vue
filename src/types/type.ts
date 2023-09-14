@@ -18,7 +18,16 @@ export interface Student extends User {
 
 export interface Teacher extends User {
   total?: number
-  count?: number
+  A?: number
+  B?: number
+  C?: number
+}
+
+export interface TeacherABC extends User {
+  total?: number
+  A?: number
+  B?: number
+  C?: number
 }
 
 export interface Process {
@@ -45,16 +54,30 @@ export interface ProcessItem {
 
 export interface ProcessScore {
   id?: string
-  studentId: string
-  detail: string | PSDetailTeacher[]
-  processId: string
+  studentId?: string
+  teacherId?: string
+  processId?: string
+  detail?: string | PSDetail
+}
+
+export interface PSDetail {
+  teacherName?: string
   score?: number
+  detail?: { number: number; score: number }[]
 }
 
 export interface PSDetailTeacher {
-  teacherId: string
-  score: number
-  teacherName: string
+  processScoreId?: string
+  teacherId?: string
+  teacherName?: string
+  score?: number
+  detail?: { number: number; score: number }[]
+}
+
+export interface StudentProcessScore extends Student {
+  averageScore?: number
+  currentTeacherScore?: number
+  psTeachers?: PSDetailTeacher[]
 }
 
 export interface ProcessFile {

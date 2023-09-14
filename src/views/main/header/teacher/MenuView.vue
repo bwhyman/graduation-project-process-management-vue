@@ -14,5 +14,6 @@ const processesR = storeToRefs(processStore).processesS
         {{ ps.name }}
       </el-menu-item>
     </template>
+    <el-menu-item index="/teacher/operations">功能</el-menu-item>
   </el-menu>
 </template>

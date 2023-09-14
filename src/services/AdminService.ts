@@ -6,6 +6,7 @@ import type {
   Student,
   StudentProcess,
   Teacher,
+  TeacherABC,
   User
 } from '@/types/type'
 import { useMessageStore } from '@/stores/MessageStore'
@@ -29,12 +30,13 @@ export const updatePassword = async (number: string) => {
 
 //
 export const addStudents = async (students: User[]) => {
+  students.forEach((stu) => stu.student && (stu.student = JSON.stringify(stu.student)))
   await axios.post('admin/students', students)
   messageR.value = '学生添加成功'
 }
 
 export const addTeachers = async (teachers: Teacher[]) => {
-  teachers.forEach((t) => (t.teacher = JSON.stringify(t.teacher)))
+  teachers.forEach((t) => t.teacher && (t.teacher = JSON.stringify(t.teacher)))
   await axios.post('admin/teachers', teachers)
   messageR.value = '导师添加成功'
 }
@@ -80,4 +82,10 @@ export const addProcessService = async (ps: Process) => {
 export const resetData = async () => {
   const resp = await axios.post('admin/resetdata')
   messageR.value = '数据重置成功'
+}
+
+export const listTeachersService = async () => {
+  const resp = await axios.get<ResultVO<{ teachers: User[] }>>('admin/teachers')
+  const teachers = resp.data.data?.teachers && parseTeachers(resp.data.data?.teachers)
+  return { teachers }
 }
