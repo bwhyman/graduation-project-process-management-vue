@@ -1,20 +1,17 @@
 <script lang="ts" setup>
-import { listTeachers, selectTeacher } from '@/services/StudentService'
+import { listTeachersService, selectTeacher } from '@/services/StudentService'
 import { useUserStore } from '@/stores/UserStore'
 import type { Student, Teacher } from '@/types/type'
 
-const teachersR = ref<Teacher[]>([])
-const startTimeR = ref('')
+const result = await listTeachersService()
+
+const teachersR = ref(result.teachers ?? [])
+const startTimeR = ref(result.starttime)
 const selectVisible = ref(false)
 const selecedTeacherR = ref<Teacher>({})
 
 const userStore = useUserStore()
 const userR = storeToRefs(userStore).userS as Ref<Student>
-
-listTeachers().then((result) => {
-  startTimeR.value = result.starttime ?? ''
-  result.teachers && (teachersR.value = result.teachers)
-})
 
 const select = (teacher: Teacher) => {
   selectVisible.value = true
@@ -48,7 +45,7 @@ const confirm = () => {
       </el-tag>
     </el-col>
   </el-row> -->
-  <el-row class="my-row" v-if="teachersR.length > 0">
+  <!-- <el-row class="my-row" v-if="teachersR.length > 0">
     <el-col>
       <el-table :data="teachersR">
         <el-table-column label="#" type="index" align="center" />
@@ -70,15 +67,15 @@ const confirm = () => {
         </el-table-column>
       </el-table>
     </el-col>
-  </el-row>
+  </el-row> -->
 
-  <el-row class="my-row" v-if="userR?.teacherId">
+  <el-row class="my-row" v-if="userR.student?.teacherId">
     <el-col>
       <div style="margin: auto; padding-bottom: 10px" align="center">
         <p>
           指导教师：
           <el-tag type="danger" effect="light">
-            {{ userR.teacherName }}
+            {{ userR.student?.teacherName }}
           </el-tag>
           老师
         </p>
@@ -92,7 +89,7 @@ const confirm = () => {
           </el-tag>
           ； 答辩顺序：
           <el-tag type="success" effect="light">
-            {{ userR.queueNumber }}
+            {{ userR.student.queueNumber }}
           </el-tag>
         </p>
       </div>

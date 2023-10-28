@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { parseStudent } from '@/services/ParseUtils'
 import {
   getProcessScoresService,
   getStudentsService,
@@ -7,7 +6,7 @@ import {
   getUnselectedStudentsService
 } from '@/services/TeacherService'
 import { useProcessStore } from '@/stores/ProcessStore'
-import type { ProcessItem, Student, User } from '@/types/type'
+import type { Student, User } from '@/types/type'
 
 const studentsR = ref<User[]>([])
 const showUnSelectedR = ref(false)
@@ -15,8 +14,8 @@ const processStore = useProcessStore()
 const processS = storeToRefs(processStore).processesS
 
 const getStu = () => {
-  getUnselectedStudentsService().then((result) => {
-    result.students && (studentsR.value = result.students)
+  getUnselectedStudentsService().then((students) => {
+    studentsR.value = students
     showUnSelectedR.value = true
   })
 }
@@ -26,12 +25,11 @@ const exportStudents = () => {
     if (!res.students) return
     let i = 0
     let result = res.students.map((s) => {
-      let temp = parseStudent(s)
       return {
         序号: (i += 1),
-        学号: temp.number,
-        学生姓名: temp.name,
-        指导教师: temp.teacherName
+        学号: s.number,
+        学生姓名: s.name,
+        指导教师: s.student?.teacherName
       }
     })
     import('@/services/ExcelUtils').then(({ exportExcelFile }) => exportExcelFile(result))

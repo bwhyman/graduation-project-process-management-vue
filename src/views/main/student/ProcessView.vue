@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Check } from '@element-plus/icons-vue'
 import { useProcessStore } from '@/stores/ProcessStore'
-import type { Student, StudentProcess } from '@/types/type'
+import type { StudentProcess } from '@/types/type'
 import { uploadFileService } from '@/services/StudentService'
 import { useUserStore } from '@/stores/UserStore'
 import { useMessageStore } from '@/stores/MessageStore'
@@ -9,17 +9,12 @@ const props = defineProps<{ pid: string }>()
 
 const processStore = useProcessStore()
 const studentProcessR = ref<StudentProcess>()
-const studentProcessesR = storeToRefs(processStore).studentProcessesS
+const studentProcessesR = processStore.studentProcessesS
 const userStore = useUserStore()
-const userR = storeToRefs(userStore).userS as Ref<Student>
+const messageStore = useMessageStore()
+const userR = userStore.userS
 
-watch(
-  [studentProcessesR.value, props],
-  () => {
-    studentProcessR.value = studentProcessesR.value.find((sp) => sp.processId == props.pid)
-  },
-  { immediate: true }
-)
+studentProcessR.value = studentProcessesR.find((sp) => sp.processId == props.pid)
 
 const fileInputR = ref<HTMLInputElement>()
 const visableSubmitR = ref(false)
@@ -41,22 +36,23 @@ const uploadF = () => {
   const fName = fileR.value.name
   const ext = fName.substring(fName.lastIndexOf('.'))
   if (ext != '.pdf') {
-    const messageStore = useMessageStore()
-    const messageR = storeToRefs(messageStore).messageS
-    messageR.value = '请转为PDF版上传'
+    storeToRefs(messageStore).messageS.value = '请转为PDF版上传'
     return
   }
 
-  const fileName = `${userR.value.queueNumber}-${userR.value.name}-${studentProcessR.value?.name}${ext}`
+  const fileName = `${userR.student?.queueNumber}-${userR.name}-${studentProcessR.value?.name}${ext}`
 
   fdata.append('pname', studentProcessR.value?.name ?? '')
   fdata.append('file', fileR.value, fileName)
   fdata.append('pid', props.pid)
-  userR.value.id && fdata.append('sid', userR.value.id)
-  studentProcessR.value?.name && uploadFileService(fdata)
-  visableSubmitR.value = false
-  // 再次选择时，需清空值
-  ;(fileInputR.value as HTMLInputElement).value = ''
+  userR.id && fdata.append('sid', userR.id)
+  studentProcessR.value?.name &&
+    uploadFileService(fdata).then(() => {
+      storeToRefs(messageStore).messageS.value = '上传成功'
+      visableSubmitR.value = false
+      // 再次选择时，需清空值
+      ;(fileInputR.value as HTMLInputElement).value = ''
+    })
 }
 </script>
 <template>

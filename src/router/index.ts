@@ -20,6 +20,21 @@ const routes: RouteRecordRaw[] = [
     },
     children: [
       {
+        path: 'settings',
+        components: {
+          default: () => import('@/views/main/header/UserSettingView.vue'),
+          menu: () => {
+            const role = sessionStorage.getItem('role')
+            if (role == consty.STUDENT) {
+              return import('@/views/main/header/student/MenuView.vue')
+            }
+            if (role == consty.TEACHER) {
+              return import('@/views/main/header/teacher/MenuView.vue')
+            }
+          }
+        }
+      },
+      {
         path: 'admin',
         component: () => import('@/views/main/admin/IndexView.vue'),
         meta: {

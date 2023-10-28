@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { useInfosStore } from '@/stores/InfosStore'
+import { getInfosService } from '@/services/TeacherService'
+// 加载指导学生/组学生/评审信息
+const result = await getInfosService()
 
-const groupStore = useInfosStore()
-const studentsR = storeToRefs(groupStore).tutortudentsS
+const studentsR = result.tutortudentsS
 </script>
 <template>
   <el-row class="my-row">
@@ -12,7 +13,7 @@ const studentsR = storeToRefs(groupStore).tutortudentsS
         <el-table-column property="name" min-width="50" />
         <el-table-column min-width="50">
           <template #default="scope">
-            {{ scope.row.groupNumber }}组；{{ scope.row.queueNumber }}号
+            {{ scope.row.groupNumber }}组；{{ scope.row.student.queueNumber }}号
           </template>
         </el-table-column>
         <el-table-column min-width="150">

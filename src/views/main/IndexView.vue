@@ -1,13 +1,11 @@
 <script setup lang="ts">
+import { listProcessesService } from '@/services'
 import HeaderView from './header/IndexView.vue'
-import { useSettingStore } from '@/stores/SettingStore'
-const UpdatePassword = defineAsyncComponent(() => import('./UpdatePasswordView.vue'))
 
-const settingStore = useSettingStore()
+// 加载过程信息
+await listProcessesService()
 </script>
 <template>
   <HeaderView />
   <RouterView />
-  <!--  -->
-  <UpdatePassword v-if="settingStore.showResetPasswordS" />
 </template>

@@ -4,8 +4,8 @@ export interface User {
   number?: string
   password?: string
   groupNumber?: number
-  student?: string | Student
-  teacher?: string | Teacher
+  student?: Student
+  teacher?: Teacher
   insertTime?: string
   updateTime?: string
 }
@@ -35,8 +35,8 @@ export interface Process {
   name?: string
   auth?: string
   point?: number
-  studentAttach?: StudentProcess[] | string
-  items?: ProcessItem[] | string
+  studentAttach?: StudentProcess[]
+  items?: ProcessItem[]
 }
 
 export interface StudentProcess {
@@ -57,7 +57,7 @@ export interface ProcessScore {
   studentId?: string
   teacherId?: string
   processId?: string
-  detail?: string | PSDetail
+  detail?: PSDetail
 }
 
 export interface PSDetail {

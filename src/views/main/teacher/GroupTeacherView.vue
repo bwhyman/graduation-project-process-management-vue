@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useInfosStore } from '@/stores/InfosStore'
+import { getInfosService } from '@/services/TeacherService'
 import { useUserStore } from '@/stores/UserStore'
 
+const result = await getInfosService()
 const useStore = useUserStore()
 const userR = storeToRefs(useStore).userS
 
-const groupStore = useInfosStore()
-const groupTeachersR = storeToRefs(groupStore).groupTeachersS
+const groupTeachersR = result.groupTeachersS
 </script>
 <template>
   <el-row class="my-row">

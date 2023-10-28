@@ -32,6 +32,7 @@ axios.interceptors.response.use(
       const store = useMessageStore()
       const messageR = storeToRefs(store).messageS
       messageR.value = data.message ?? ''
+      parseObject(resp.data.data)
       return resp
     }
 
@@ -52,5 +53,33 @@ axios.interceptors.response.use(
     return Promise.reject()
   }
 )
+
+// 递归实现反序列化为JS对象
+const parseObject = (data: any) => {
+  let newValue = data
+
+  for (const [key, value] of Object.entries(data)) {
+    if (value instanceof Array) {
+      value.forEach((d) => {
+        parseObject(d)
+      })
+    }
+    if (typeof value == 'object') {
+      parseObject(value)
+    }
+
+    if (typeof value == 'string' && value.includes('{"')) {
+      try {
+        newValue = JSON.parse(value)
+        if (typeof newValue == 'object') {
+          data[key] = parseObject(newValue)
+        }
+      } catch (error) {
+        //
+      }
+    }
+  }
+  return newValue
+}
 
 export default axios

@@ -1,16 +1,28 @@
 <script setup lang="ts">
 import { useProcessStore } from '@/stores/ProcessStore'
 
-const router = useRouter()
-const activeIndex = ref(router.currentRoute.value.path)
-
-const studentPR = storeToRefs(useProcessStore()).studentProcessesS
+const menus = [
+  {
+    name: '导师',
+    path: '/student'
+  }
+]
+const processStore = useProcessStore()
+const studentPR = processStore.studentProcessesS
+studentPR.forEach((pr) => {
+  menus.push({ name: pr.name!, path: `/student/processes/${pr.processId}` })
+})
+const route = useRoute()
+const activeIndexR = ref('')
+watch(route, () => {
+  const p = menus.find((mn) => route.path.includes(mn.path))
+  activeIndexR.value = p?.path ?? ''
+})
 </script>
 <template>
-  <el-menu :default-active="activeIndex" mode="horizontal" router>
-    <el-menu-item index="/student">导师</el-menu-item>
-    <template v-for="(stuP, index) in studentPR" :key="index">
-      <el-menu-item :index="`/student/processes/${stuP.processId}`">{{ stuP.name }}</el-menu-item>
+  <el-menu :default-active="activeIndexR" mode="horizontal" router>
+    <template v-for="(menu, index) in menus" :key="index">
+      <el-menu-item :index="menu.path">{{ menu.name }}</el-menu-item>
     </template>
   </el-menu>
 </template>

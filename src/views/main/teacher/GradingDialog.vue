@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { useProcessStore } from '@/stores/ProcessStore'
 import { useUserStore } from '@/stores/UserStore'
-import type { PSDetail, ProcessScore, StudentProcessScore, ProcessItem } from '@/types/type'
+import type { PSDetail, ProcessScore, StudentProcessScore } from '@/types/type'
 
 const dialogVisible = ref(true)
+//
 interface Props {
   processId: string
   student: StudentProcessScore
@@ -14,7 +15,7 @@ const props = defineProps<Props>()
 const processStore = useProcessStore()
 const process = processStore.processesS.find((p) => p.id == props.processId)
 // 过程项
-const processItems = process?.items as ProcessItem[]
+const processItems = process?.items ?? []
 const userStore = useUserStore()
 const currentTeacherScore = props.student.psTeachers?.find((t) => t.teacherId == userStore.userS.id)
 const scoreInfoR = ref<ProcessScore>({})

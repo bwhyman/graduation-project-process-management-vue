@@ -6,6 +6,5 @@ export const useInfosStore = defineStore('useInfosStore', () => {
   const groupStudentsS = ref<Student[]>([])
   const groupTeachersS = ref<Teacher[]>([])
   const tutortudentsS = ref<Student[]>([])
-  const teachersS = ref<Teacher[]>([])
-  return { groupStudentsS, groupTeachersS, tutortudentsS, teachersS }
+  return { groupStudentsS, groupTeachersS, tutortudentsS }
 })

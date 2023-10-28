@@ -1,13 +1,21 @@
 <script setup lang="ts">
 import { useMessageStore } from '@/stores/MessageStore'
-const alertdialog = defineAsyncComponent(() => import('@/components/AlertDialog.vue'))
+import LoadingVue from '@/components/LoadingVue.vue'
+const confirmMessage = defineAsyncComponent(() => import('@/components/ConfirmMessage.vue'))
 const messageStore = useMessageStore()
 const messageR = storeToRefs(messageStore).messageS
 </script>
 <template>
-  <RouterView />
+  <suspense>
+    <template #default>
+      <RouterView />
+    </template>
+    <template #fallback>
+      <LoadingVue />
+    </template>
+  </suspense>
 
-  <alertdialog v-if="messageR.length > 0" />
+  <confirmMessage v-if="messageR.length > 0" />
 </template>
 <style>
 * {

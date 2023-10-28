@@ -3,7 +3,8 @@ import {
   addPorcessScoreService,
   listPorcessFilesService,
   getProcessFileService,
-  listProcessScoresService
+  listProcessScoresService,
+  getInfosService
 } from '@/services/TeacherService'
 import { useUserStore } from '@/stores/UserStore'
 import type {
@@ -13,7 +14,6 @@ import type {
   ProcessFile,
   ProcessScore
 } from '@/types/type'
-import { useInfosStore } from '@/stores/InfosStore'
 import { Link } from '@element-plus/icons-vue'
 import { PA_REVIEW } from '@/services/Const'
 import GroupTeacherView from './GroupTeacherView.vue'
@@ -32,29 +32,11 @@ const closeF = () => (gradingDialogVisable.value = false)
 
 const props = defineProps<{ pid: string; auth: string }>()
 const processFilesR = ref<ProcessFile[]>([])
-const groupInfosStore = useInfosStore()
 const userStore = useUserStore()
-
-const currentPStudentsR: Ref<StudentProcessScore[]> =
-  props.auth == PA_REVIEW
-    ? storeToRefs(groupInfosStore).groupStudentsS
-    : storeToRefs(groupInfosStore).tutortudentsS
-
-watch(
-  currentPStudentsR,
-  () => {
-    if (currentPStudentsR.value.length > 0) {
-      listProcessScoresService(props.pid, props.auth).then((pses) => {
-        pses && collectPS(pses)
-      })
-    }
-  },
-  { immediate: true }
-)
 
 // 聚合评分数据
 const collectPS = (pses: ProcessScore[]) => {
-  ;(currentPStudentsR.value as StudentProcessScore[]).forEach((stuD) => {
+  ;(currentPStudentsR as StudentProcessScore[]).forEach((stuD) => {
     let temp = 0
     stuD.psTeachers = []
     stuD.averageScore = temp
@@ -81,9 +63,17 @@ const collectPS = (pses: ProcessScore[]) => {
   })
 }
 
-listPorcessFilesService(props.pid, props.auth).then((pfs) => {
-  pfs && (processFilesR.value = pfs)
-})
+const result = await Promise.all([
+  getInfosService(),
+  listProcessScoresService(props.pid, props.auth),
+  listPorcessFilesService(props.pid, props.auth)
+])
+
+const currentPStudentsR: StudentProcessScore[] =
+  props.auth == PA_REVIEW ? result[0].groupStudentsS : result[0].tutortudentsS
+
+collectPS(result[1])
+processFilesR.value = result[2]
 
 const processFileC = computed(
   () => (sid: string) => processFilesR.value.find((pf) => pf.studentId == sid)
@@ -102,9 +92,9 @@ const scoreCountsC = computed<{
     sc_70 = 0,
     sc_60 = 0,
     sc_last = 0,
-    len = currentPStudentsR.value.length ?? 0
+    len = currentPStudentsR.length ?? 0
 
-  currentPStudentsR.value.forEach((psd) => {
+  currentPStudentsR.forEach((psd) => {
     const stand = 89.5
     if (!psd.averageScore || psd.averageScore < stand - 30) {
       sc_last++
@@ -169,9 +159,9 @@ const clickAttachF = (pname: string) => {
           <template #default="scope">
             <el-text type="primary" size="large">{{ scope.row.name }}</el-text>
             <br />
-            {{ scope.row.teacherName }}
+            {{ scope.row.student.teacherName }}
             <br />
-            {{ scope.row.projectTitle }}
+            {{ scope.row.student.projectTitle }}
           </template>
         </el-table-column>
         <el-table-column label="附件">
@@ -200,17 +190,6 @@ const clickAttachF = (pname: string) => {
             <el-button type="primary" @click="gradeF(scope.row)">打分</el-button>
           </template>
         </el-table-column>
-        <!-- <el-table-column label="评分">
-          <template #default="scope">
-            <el-input
-              @keyup.enter="addProcessScoreF(scope.row, $event)"
-              :value="scope.row.teacherScore"
-              v-model.number="reviewScore"
-              style="width: 70px"
-              type="number"
-              oninput="if(value > 100) value=100" />
-          </template>
-        </el-table-column> -->
       </el-table>
     </el-col>
   </el-row>

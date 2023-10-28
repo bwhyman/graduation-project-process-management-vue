@@ -2,21 +2,13 @@ import axios from '@/axios'
 import { useUserStore } from '@/stores/UserStore'
 import type { ResultVO, User } from '@/types/type'
 
-import { parseStudent, parseTeachers } from './ParseUtils'
-import { useMessageStore } from '@/stores/MessageStore'
-
 const userStore = useUserStore()
-const messageStore = useMessageStore()
-const messageR = storeToRefs(messageStore).messageS
 //
-export const listTeachers = async () => {
+export const listTeachersService = async () => {
   const resp = await axios.get<ResultVO<{ starttime: string; teachers?: User[] }>>('student/tutors')
 
   const starttime = resp.data.data?.starttime
-
-  const ts = resp.data.data?.teachers
-  // 将teacher中json信息反序列化
-  const teachers = ts && parseTeachers(ts)
+  const teachers = resp.data.data?.teachers
 
   return { starttime, teachers }
 }
@@ -28,12 +20,10 @@ export const selectTeacher = async (tid: string) => {
   )
   const teachers = resp.data.data?.teachers
 
-  teachers && parseTeachers(teachers)
   const student = resp.data.data?.user
   if (student) {
-    parseStudent(student)
-    userStore.userS = student
-    sessionStorage.setItem('user', JSON.stringify(userStore.userS))
+    storeToRefs(userStore).userS.value = student
+    sessionStorage.setItem('user', JSON.stringify(student))
   }
 
   return { teachers }
@@ -41,6 +31,6 @@ export const selectTeacher = async (tid: string) => {
 
 //
 export const uploadFileService = async (fdata: FormData) => {
-  const resp = await axios.post('student/upload', fdata)
-  messageR.value = '上传成功'
+  await axios.post('student/upload', fdata)
+  return true
 }
