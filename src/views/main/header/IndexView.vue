@@ -1,8 +1,12 @@
 <script lang="ts" setup>
-import { Refresh, Setting } from '@element-plus/icons-vue'
+import { SwitchButton, Setting } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/UserStore'
+import router from '@/router'
 const user = storeToRefs(useUserStore()).userS
-const refreshF = () => location.reload()
+const logoutF = () => {
+  sessionStorage.clear()
+  router.push('/login')
+}
 </script>
 <template>
   <el-row class="my-row" style="padding: 3px" align="middle">
@@ -21,14 +25,14 @@ const refreshF = () => location.reload()
       <RouterView name="menu" />
     </el-col>
     <el-col :span="2">
-      <el-icon id="refresh" :size="32" color="red" @click="refreshF">
-        <Refresh />
+      <el-icon id="logout" :size="32" color="red" @click="logoutF">
+        <SwitchButton />
       </el-icon>
     </el-col>
   </el-row>
 </template>
 <style scoped>
-#refresh :hover {
+#logout :hover {
   cursor: pointer;
 }
 </style>

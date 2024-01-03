@@ -1,5 +1,5 @@
 import { createServer, Response } from 'miragejs'
-import type { ResultVO, User } from '@/types/type'
+import type { ResultVO, User } from '@/types'
 import * as consty from '@/services/Const'
 
 const server = createServer({})

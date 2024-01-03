@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getGroupInfo, updateGroupAndQueue } from '@/services/AdminService'
-import type { Student, Teacher, User } from '@/types/type'
+import type { Student, Teacher, User } from '@/types'
 import { Check } from '@element-plus/icons-vue'
 
 const groupMessageR = ref<{ group: number; length: number }[]>([])

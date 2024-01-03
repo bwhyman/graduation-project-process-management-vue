@@ -8,6 +8,7 @@ import groupingView from './GroupingView.vue'
 import AddProcessView from './AddProcessView.vue'
 import ResetDataView from './ResetDataView.vue'
 import StudentSelectionView from './StudentSelectionView.vue'
+import UpdateStudentView from './UpdateStudentView.vue'
 </script>
 <template>
   <!-- start time, reset password -->
@@ -47,6 +48,11 @@ import StudentSelectionView from './StudentSelectionView.vue'
     </el-col>
     <el-col :span="12">
       <AddProcessView />
+    </el-col>
+  </el-row>
+  <el-row class="my-row">
+    <el-col :span="24">
+      <UpdateStudentView />
     </el-col>
   </el-row>
   <el-row class="my-row">

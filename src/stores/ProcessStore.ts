@@ -1,9 +1,9 @@
-import type { Process, StudentProcess } from '@/types/type'
+import type { Process, StudentAttach } from '@/types'
 import { defineStore } from 'pinia'
 
 export const useProcessStore = defineStore('useProcessStore', () => {
   const processesS = ref<Process[]>([])
-  const studentProcessesS = ref<StudentProcess[]>([])
+  const studentProcessesS = ref<StudentAttach[]>([])
 
   return { processesS, studentProcessesS }
 })

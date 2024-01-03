@@ -1,31 +1,42 @@
 import axios from '@/axios'
-import type { ProcessFile, ProcessScore, ResultVO, User } from '@/types/type'
+import type { ProcessFile, ProcessScore, ResultVO, User } from '@/types'
 import { useInfosStore } from '@/stores/InfosStore'
 
-// 加载指导学生/组学生/组评审，信息
-export const getInfosService = async () => {
+// 获取指导学生
+export const listTutorStudentsService = async () => {
   const groupStore = useInfosStore()
-
-  if (groupStore.groupStudentsS.length > 0) return groupStore
-
-  const gstudentsR = storeToRefs(groupStore).groupStudentsS
-  const gteachersR = storeToRefs(groupStore).groupTeachersS
+  if (groupStore.tutortudentsS.length > 0) return groupStore.tutortudentsS
+  const resp = await axios.get<ResultVO<{ students: User[] }>>('teacher/students/tutor')
   const tutortudentsR = storeToRefs(groupStore).tutortudentsS
+  tutortudentsR.value = resp.data.data?.students ?? []
+  return resp.data.data?.students
+}
 
-  const resp = await axios.get<
-    ResultVO<{ students: User[]; teachers: User[]; tutorStudents: User[] }>
-  >(`teacher/infos`)
-  const stus = resp.data.data?.students
-  const teas = resp.data.data?.teachers
-  const tutorStus = resp.data.data?.tutorStudents
-
-  gstudentsR.value = stus ?? []
-  gteachersR.value = teas ?? []
-  tutortudentsR.value = tutorStus ?? []
+//
+export const listGroupStudentsService = async () => {
+  const groupStore = useInfosStore()
+  if (groupStore.groupStudentsS.length > 0) return groupStore.groupStudentsS
+  const resp = await axios.get<ResultVO<{ students: User[] }>>('teacher/students/group')
+  const gstudentsR = storeToRefs(groupStore).groupStudentsS
+  gstudentsR.value = resp.data.data?.students ?? []
   // 学生按答辩顺序排序
-  gstudentsR.value.sort((x, y) => (x.queueNumber ?? 0) - (y.queueNumber ?? 0))
+  gstudentsR.value.sort((x, y) => (x.student?.queueNumber ?? 0) - (y.student?.queueNumber ?? 0))
+  return gstudentsR.value
+  // const resp = await axios.get<ResultVO<{ students: User[] }>>('teacher/students/group')
+  // const students = resp.data.data?.students.sort(
+  //   (x, y) => (x.student?.queueNumber ?? 0) - (y.student?.queueNumber ?? 0)
+  // )
+  // return students
+}
 
-  return groupStore
+//
+export const listGroupTeachersService = async () => {
+  const groupStore = useInfosStore()
+  if (groupStore.groupTeachersS.length > 0) return groupStore.groupTeachersS
+  const resp = await axios.get<ResultVO<{ teachers: User[] }>>('teacher/teachers/group')
+  const groupTeachers = storeToRefs(groupStore).groupTeachersS
+  groupTeachers.value = resp.data.data?.teachers ?? []
+  return groupTeachers.value
 }
 
 // 加载指定过程评分
@@ -66,20 +77,20 @@ export const getUnselectedStudentsService = async () => {
 export const getStudentsService = async () => {
   const resp = await axios.get<ResultVO<{ students: User[] }>>('teacher/students')
   const students = resp.data.data?.students ?? []
-  return { students }
+  return students
 }
 // 获取全部教师
 export const getTeachersService = async () => {
   const resp = await axios.get<ResultVO<{ teachers: User[] }>>('teacher/teachers')
   const teachers = resp.data.data?.teachers
-  return { teachers }
+  return teachers
 }
 
 // 获取全部评分
 export const getProcessScoresService = async () => {
   const resp = await axios.get<ResultVO<{ processScores: ProcessScore[] }>>('teacher/processscores')
   const ps = resp.data.data?.processScores
-  return { ps }
+  return ps
 }
 
 //
@@ -95,4 +106,12 @@ export const getProcessFileService = async (pname: string) => {
   link.click()
   window.URL.revokeObjectURL(url)
   document.body.removeChild(link)
+}
+
+//
+export const listProcessScoresGroupService = async () => {
+  const resp = await axios.get<ResultVO<{ processScores: ProcessScore[] }>>(
+    'teacher/processscores/groups'
+  )
+  return resp.data.data?.processScores ?? []
 }

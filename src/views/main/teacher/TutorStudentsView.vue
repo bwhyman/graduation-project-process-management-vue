@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { getInfosService } from '@/services/TeacherService'
-// 加载指导学生/组学生/评审信息
-const result = await getInfosService()
-
-const studentsR = result.tutortudentsS
+import { listTutorStudentsService } from '@/services/TeacherService'
+import { useInfosStore } from '@/stores/InfosStore'
+import type { User } from '@/types'
+// 加载指导学生
+await listTutorStudentsService()
+const studentsR = storeToRefs(useInfosStore()).tutortudentsS
 </script>
 <template>
   <el-row class="my-row">
@@ -18,7 +19,7 @@ const studentsR = result.tutortudentsS
         </el-table-column>
         <el-table-column min-width="150">
           <template #default="scope">
-            {{ scope.row.projectTitle }}
+            {{ (scope.row as User).student?.projectTitle }}
           </template>
         </el-table-column>
       </el-table>

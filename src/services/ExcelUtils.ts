@@ -1,4 +1,4 @@
-import type { User, Student, ProcessScore, ProcessItem, Process, PSDetail } from '@/types/type'
+import type { User, Student, ProcessScore, ProcessItem, Process, PSDetail } from '@/types'
 import * as XLSX from 'xlsx'
 
 // 读取学生表格
@@ -105,7 +105,7 @@ export const exportGroupExcelFile = (
 export const exportScoreExcelFile = (
   processes: Process[],
   processScores: ProcessScore[],
-  students: Student[]
+  students: User[]
 ) => {
   let index = 0
   const rows = students.map((stu) => {
@@ -113,9 +113,10 @@ export const exportScoreExcelFile = (
     row['序号'] = index += 1
     row['学号'] = stu.number
     row['姓名'] = stu.name
-    row['指导教师'] = stu.teacherName
-    row['毕设题目'] = stu.projectTitle
+    row['指导教师'] = stu.student?.teacherName
+    row['毕设题目'] = stu.student?.projectTitle
 
+    let finalScore = 0
     processes.forEach((p) => {
       const processScoresT = processScores.filter(
         (ps) => p.id == ps.processId && ps.studentId == stu.id
@@ -131,19 +132,25 @@ export const exportScoreExcelFile = (
         })
       })
       ;((p.items as ProcessItem[]) ?? []).forEach((item) => {
-        row[`${item.name}(${item.point})`] =
-          ~~((scoreDetailMap.get(item.number!)! / processScoresT.length) * 100) / 100
+        const x = ~~((scoreDetailMap.get(item.number!)! / processScoresT.length) * 100) / 100
+        row[`${item.name}(${item.point})`] = x
+        if (p.items && p.items.length == 1) {
+          finalScore += x * p.point! * 0.01
+        }
       })
 
-      // 过程平均分
-      let temp = 0
-      scoreDetailMap.forEach((value) => {
-        temp += value
-      })
-
-      row[`${p.name}`] = ~~((temp / processScoresT.length) * 100) / 100
+      if (p.items && p.items?.length > 1) {
+        // 过程平均分
+        let temp = 0
+        scoreDetailMap.forEach((value) => {
+          temp += value
+        })
+        const x = ~~((temp / processScoresT.length) * 100) / 100
+        row[`${p.name}`] = x
+        finalScore += x * p.point! * 0.01
+      }
     })
-
+    row[`最终`] = ~~(finalScore * 100) / 100
     return row
   })
   const workBook = XLSX.utils.book_new()
@@ -163,6 +170,32 @@ export function readStudentForSelectionFile(file: Blob) {
       const sheet = wb.Sheets[wb.SheetNames[0]]
       XLSX.utils.sheet_to_json(sheet).forEach((r: any) => {
         students.push({ name: r['姓名'], number: r['账号'].toString() })
+      })
+    }
+    reader.onloadend = () => {
+      resolve(students)
+    }
+    reader.readAsBinaryString(file)
+  })
+}
+
+//
+export const readStudents2 = (file: Blob) => {
+  return new Promise<User[]>((resolve) => {
+    const reader = new FileReader()
+    const students: Student[] = []
+    reader.onload = (e: ProgressEvent<FileReader>) => {
+      const data = e.target?.result
+      const wb = XLSX.read(data, { type: 'binary' })
+      const sheet = wb.Sheets[wb.SheetNames[0]]
+      XLSX.utils.sheet_to_json(sheet).forEach((r: any) => {
+        students.push({
+          name: r['姓名'],
+          number: r['账号'].toString(),
+          queueNumber: r['#'].toString(),
+          projectTitle: r['题目'].toString(),
+          groupNumber: r['分组'].toString()
+        })
       })
     }
     reader.onloadend = () => {

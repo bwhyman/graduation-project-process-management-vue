@@ -1,6 +1,6 @@
 import axios from '@/axios'
 import { useUserStore } from '@/stores/UserStore'
-import type { ResultVO, User } from '@/types/type'
+import type { ProcessFile, ResultVO, User } from '@/types'
 
 const userStore = useUserStore()
 //
@@ -30,7 +30,18 @@ export const selectTeacher = async (tid: string) => {
 }
 
 //
-export const uploadFileService = async (fdata: FormData) => {
-  await axios.post('student/upload', fdata)
-  return true
+export const uploadFileService = async (pid: string, num: number, fdata: FormData) => {
+  const resp = await axios.post<ResultVO<{ processfiles: ProcessFile[] }>>(
+    `student/upload/${pid}/numbers/${num}`,
+    fdata
+  )
+  return resp.data.data?.processfiles ?? []
+}
+//
+export const listProcessFilesService = async (pid: string) => {
+  const resp = await axios.get<ResultVO<{ processfiles: ProcessFile[] }>>(
+    `student/processfiles/${pid}`
+  )
+
+  return resp.data.data?.processfiles ?? []
 }

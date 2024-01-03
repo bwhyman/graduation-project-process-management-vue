@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { addStudents, listTeachersService } from '@/services/AdminService'
 import { readStudentForSelectionFile } from '@/services/ExcelUtils'
-import type { User } from '@/types/type'
-import { Check } from '@element-plus/icons-vue'
+import type { User } from '@/types'
 
 interface TeacherTemp {
   id?: string

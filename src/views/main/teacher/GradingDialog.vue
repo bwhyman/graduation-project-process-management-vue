@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useProcessStore } from '@/stores/ProcessStore'
 import { useUserStore } from '@/stores/UserStore'
-import type { PSDetail, ProcessScore, StudentProcessScore } from '@/types/type'
+import type { PSDetail, ProcessScore, StudentProcessScore } from '@/types'
 
 const dialogVisible = ref(true)
 //
@@ -58,13 +58,28 @@ const submitF = () => {
   psDetailR.value.teacherName = userStore.userS.name
   scoreInfoR.value.detail = toRaw(psDetailR.value)
   currentTeacherScore && (scoreInfoR.value.id = currentTeacherScore.processScoreId)
-  //console.log(scoreInfoR.value)
+
   props.addProcessScore(toRaw(scoreInfoR.value))
   props.close()
 }
+
+//
+const wWidth = ref(window.innerWidth)
+// onMounted(() => {
+//   wWidth.value = window.innerWidth
+//   window.addEventListener('resize', () => {
+//     wWidth.value = window.innerWidth
+//   })
+// })
+// onUnmounted(() => {
+//   window.removeEventListener('resize', () => {})
+// })
+const widthC = computed(() => {
+  return wWidth.value < 768 ? '80%' : '50%'
+})
 </script>
 <template>
-  <el-dialog v-model="dialogVisible" title="Grading" width="50%" @close="props.close">
+  <el-dialog v-model="dialogVisible" title="Grading" :width="widthC" @close="props.close">
     <p>{{ props.student.name }}；平均分： {{ props.student.averageScore }}；</p>
 
     <br />
@@ -72,8 +87,9 @@ const submitF = () => {
       <el-col :span="6" style="margin-top: 5px; text-align: right">
         <span>{{ p.name }}-{{ p.point }}</span>
       </el-col>
-      <el-col :span="4">
+      <el-col :span="10">
         <el-input
+          style="margin-bottom: 5px"
           type="number"
           v-on:input="onInputF(index)"
           :value="psDetailR.detail![index].score"
@@ -82,7 +98,7 @@ const submitF = () => {
       </el-col>
     </el-row>
     <br />
-    <el-row :gutter="10">
+    <el-row :gutter="10" style="margin-bottom: 5px">
       <el-col :span="6" style="text-align: right">
         <span>评分</span>
       </el-col>
@@ -91,6 +107,11 @@ const submitF = () => {
       </el-col>
     </el-row>
 
-    <el-button type="primary" @click="submitF">提交</el-button>
+    <el-row :gutter="10">
+      <el-col :span="6"></el-col>
+      <el-col :span="12">
+        <el-button type="primary" @click="submitF">提交</el-button>
+      </el-col>
+    </el-row>
   </el-dialog>
 </template>

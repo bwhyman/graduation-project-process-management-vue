@@ -8,9 +8,9 @@ const menus = [
   }
 ]
 const processStore = useProcessStore()
-const studentPR = processStore.studentProcessesS
+const studentPR = processStore.processesS
 studentPR.forEach((pr) => {
-  menus.push({ name: pr.name!, path: `/student/processes/${pr.processId}` })
+  menus.push({ name: pr.name!, path: `/student/processes/${pr.id}` })
 })
 const route = useRoute()
 const activeIndexR = ref('')

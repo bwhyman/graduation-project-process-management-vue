@@ -35,14 +35,15 @@ export interface Process {
   name?: string
   auth?: string
   point?: number
-  studentAttach?: StudentProcess[]
+  studentAttach?: StudentAttach[]
   items?: ProcessItem[]
 }
 
-export interface StudentProcess {
-  processId?: string
+export interface StudentAttach {
+  number?: number
   name?: string
   ext?: string
+  description?: string
 }
 
 export interface ProcessItem {
@@ -85,6 +86,16 @@ export interface ProcessFile {
   studentId?: string
   processId?: string
   detail?: string
+  number?: number
+}
+
+export interface LevelCount {
+  score_90: number
+  score_80: number
+  score_70: number
+  score_60: number
+  score_last: number
+  len: number
 }
 
 export interface ResultVO<T> {

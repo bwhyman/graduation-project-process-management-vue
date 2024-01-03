@@ -42,6 +42,13 @@ const routes: RouteRecordRaw[] = [
         }
       },
       {
+        path: 'processfiles',
+        component: () => import('@/views/main/teacher/functions/ListFilesView.vue'),
+        meta: {
+          roles: [consty.TEACHER]
+        }
+      },
+      {
         path: 'student',
         components: {
           default: () => import('@/views/main/student/IndexView.vue'),
@@ -77,8 +84,12 @@ const routes: RouteRecordRaw[] = [
             component: () => import('@/views/main/teacher/TutorStudentsView.vue')
           },
           {
-            path: 'operations',
-            component: () => import('@/views/main/teacher/OperationView.vue')
+            path: 'scores',
+            component: () => import('@/views/main/teacher/GroupScoringsView.vue')
+          },
+          {
+            path: 'functions',
+            component: () => import('@/views/main/teacher/functions/IndexView.vue')
           },
           {
             props: true,

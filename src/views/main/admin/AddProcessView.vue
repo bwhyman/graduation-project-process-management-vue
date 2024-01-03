@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Process, ProcessItem, StudentProcess } from '@/types/type'
+import type { Process, ProcessItem, StudentAttach } from '@/types'
 import { Check, Plus } from '@element-plus/icons-vue'
 import { processAuths } from '@/services/Const'
 import { addProcessService } from '@/services/AdminService'
@@ -13,8 +13,8 @@ const processR = ref<Process>({})
 const processItemR = ref<ProcessItem>({})
 const processItemsR = ref<ProcessItem[]>([])
 //
-const processAttachR = ref<StudentProcess>({})
-const processAttachsR = ref<StudentProcess[]>([])
+const processAttachR = ref<StudentAttach>({})
+const processAttachsR = ref<StudentAttach[]>([])
 //
 const processStore = useProcessStore()
 const processesR = storeToRefs(processStore).processesS
@@ -27,6 +27,7 @@ const addItemF = () => {
 }
 
 const addAttachF = () => {
+  processAttachR.value.number = processR.value.studentAttach?.length ?? 0
   processAttachsR.value.push(processAttachR.value)
   processAttachR.value = {}
   processR.value.studentAttach = processAttachsR.value
@@ -59,6 +60,9 @@ watch(dialogVisible, () => {
         <el-row :gutter="10" style="margin-bottom: 10px">
           <el-col :span="6">
             <el-input v-model="processR.name" placeholder="名称" />
+          </el-col>
+          <el-col :span="6">
+            <el-input v-model="processR.point" placeholder="比例" />
           </el-col>
           <el-col :span="6">
             <el-select v-model="processR.auth" placeholder="类型">
@@ -97,6 +101,14 @@ watch(dialogVisible, () => {
       <el-row :gutter="10">
         <el-col :span="6">
           <el-input v-model="processAttachR.name" placeholder="学生附件名称" />
+        </el-col>
+        <el-col :span="6">
+          <el-input v-model="processAttachR.ext" placeholder="文件扩展名。 .ppt, .pptx" />
+        </el-col>
+        <el-col :span="6">
+          <el-input
+            v-model="processAttachR.description"
+            placeholder="上传答辩PPT，答辩时可在教师机直接下载" />
         </el-col>
         <el-col :span="6">
           <el-button

@@ -2,13 +2,12 @@
 import { Lock } from '@element-plus/icons-vue'
 
 import { updateSelfPassword } from '@/services'
-import { useMessageStore } from '@/stores/MessageStore'
+import { createMessageDialog } from '@/components/message'
 
-const messageS = storeToRefs(useMessageStore()).messageS
 const pwdM = ref({ p1: '', p2: '' })
 const resetPwd = () => {
   if (!pwdM.value.p1 || !(pwdM.value.p1 == pwdM.value.p2)) {
-    messageS.value = '2次输入密码不同'
+    createMessageDialog('2次输入密码不同')
     return
   }
   updateSelfPassword(pwdM.value.p1)

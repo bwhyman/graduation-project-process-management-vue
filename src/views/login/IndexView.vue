@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { User } from '@/types/type'
+import type { User } from '@/types'
 import { Lock, User as UserIco, SwitchButton } from '@element-plus/icons-vue'
 import { loginService } from '@/services'
 

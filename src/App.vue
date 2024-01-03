@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import { useMessageStore } from '@/stores/MessageStore'
 import LoadingVue from '@/components/LoadingVue.vue'
-const confirmMessage = defineAsyncComponent(() => import('@/components/ConfirmMessage.vue'))
-const messageStore = useMessageStore()
-const messageR = storeToRefs(messageStore).messageS
 </script>
 <template>
   <suspense>
@@ -14,8 +10,6 @@ const messageR = storeToRefs(messageStore).messageS
       <LoadingVue />
     </template>
   </suspense>
-
-  <confirmMessage v-if="messageR.length > 0" />
 </template>
 <style>
 * {

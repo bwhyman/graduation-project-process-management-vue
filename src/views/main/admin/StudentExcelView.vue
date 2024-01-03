@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Check } from '@element-plus/icons-vue'
-import type { Student } from '@/types/type'
+import type { Student } from '@/types'
 import { readStudentFile } from '@/services/ExcelUtils'
 import { addStudents } from '@/services/AdminService'
 

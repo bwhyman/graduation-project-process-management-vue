@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { useProcessStore } from '@/stores/ProcessStore'
+import { listProcessesService } from '@/services'
 const menus = [
   {
     name: '学生',
     path: '/teacher'
   }
 ]
-const processStore = useProcessStore()
-const processes = processStore.processesS
+
+const processes = (await listProcessesService()) ?? []
 processes.forEach((ps) => {
   menus.push({ name: ps.name!, path: `/teacher/processes/${ps.id}/types/${ps.auth}` })
 })
@@ -25,6 +25,7 @@ watch(route, () => {
         {{ menu.name }}
       </el-menu-item>
     </template>
-    <el-menu-item index="/teacher/operations">功能</el-menu-item>
+    <el-menu-item index="/teacher/scores">小组成绩统计</el-menu-item>
+    <el-menu-item index="/teacher/functions">功能</el-menu-item>
   </el-menu>
 </template>

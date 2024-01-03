@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { listTeachersService, selectTeacher } from '@/services/StudentService'
 import { useUserStore } from '@/stores/UserStore'
-import type { Student, Teacher } from '@/types/type'
+import type { Student, Teacher } from '@/types'
 
 const result = await listTeachersService()
 

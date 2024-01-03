@@ -1,10 +1,11 @@
 import axios from '@/axios'
-import type { Process, ResultVO, User } from '@/types/type'
+import type { Process, ResultVO, User } from '@/types'
 import router from '@/router'
 import { STUDENT, ADMIN, TEACHER } from '@/services/Const'
 import { useSettingStore } from '@/stores/SettingStore'
 
 import { useProcessStore } from '@/stores/ProcessStore'
+import type { AxiosResponse } from 'axios'
 
 const settingStore = useSettingStore()
 const processStore = useProcessStore()
@@ -54,18 +55,14 @@ export const updateSelfPassword = async (pwd: string) => {
 export const listProcessesService = async () => {
   let processesR = processStore.processesS
   if (processesR.length > 0) return processesR
+  const role = sessionStorage.getItem('role')
+  if (role == TEACHER) {
+    const resp = await axios.get<ResultVO<{ processes: Process[] }>>('teacher/processes')
+    processesR = resp.data.data?.processes ?? []
+  } else if (role == STUDENT) {
+    const resp = await axios.get<ResultVO<{ processes: Process[] }>>('student/processes')
+    processesR = resp.data.data?.processes ?? []
+  }
 
-  const resp = await axios.get<ResultVO<{ processes: Process[] }>>('processes')
-  processesR = resp.data.data?.processes ?? []
-  processesR.forEach((p) => {
-    p.studentAttach?.forEach((ps) => {
-      processStore.studentProcessesS.push({
-        processId: p.id,
-        name: ps.name,
-        ext: ps.ext
-      })
-    })
-  })
-
-  processStore.processesS = processesR = resp.data.data?.processes ?? []
+  processStore.processesS = processesR
 }

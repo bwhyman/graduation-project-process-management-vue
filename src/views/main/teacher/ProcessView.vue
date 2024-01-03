@@ -4,7 +4,8 @@ import {
   listPorcessFilesService,
   getProcessFileService,
   listProcessScoresService,
-  getInfosService
+  listTutorStudentsService,
+  listGroupStudentsService
 } from '@/services/TeacherService'
 import { useUserStore } from '@/stores/UserStore'
 import type {
@@ -12,31 +13,60 @@ import type {
   PSDetail,
   PSDetailTeacher,
   ProcessFile,
-  ProcessScore
-} from '@/types/type'
-import { Link } from '@element-plus/icons-vue'
+  ProcessScore,
+  Student,
+  LevelCount
+} from '@/types'
 import { PA_REVIEW } from '@/services/Const'
 import GroupTeacherView from './GroupTeacherView.vue'
+import { useProcessStore } from '@/stores/ProcessStore'
 
-const gradingDialog = defineAsyncComponent(() => import('./GradingDialog.vue'))
-const currentStudentR = ref<StudentProcessScore>()
-
-const gradingDialogVisable = ref(false)
-const gradeF = (s: StudentProcessScore) => {
-  gradingDialogVisable.value = true
-  currentStudentR.value = s
-}
-// 传给子组件
-const closeF = () => (gradingDialogVisable.value = false)
 // --------------------
-
 const props = defineProps<{ pid: string; auth: string }>()
 const processFilesR = ref<ProcessFile[]>([])
 const userStore = useUserStore()
 
+let get: Function
+if (props.auth == PA_REVIEW) {
+  get = listGroupStudentsService
+} else {
+  get = listTutorStudentsService
+}
+
+const result = await Promise.all([
+  get(),
+  listProcessScoresService(props.pid, props.auth),
+  listPorcessFilesService(props.pid, props.auth)
+])
+
+//
+const levelCount = ref<LevelCount>({
+  score_last: 0,
+  score_60: 0,
+  score_70: 0,
+  score_80: 0,
+  score_90: 0,
+  len: result[0].length
+})
+const currentPStudentsR = ref<StudentProcessScore[]>([])
+
+collectPS(result[1])
+processFilesR.value = result[2]
+
 // 聚合评分数据
-const collectPS = (pses: ProcessScore[]) => {
-  ;(currentPStudentsR as StudentProcessScore[]).forEach((stuD) => {
+function collectPS(pses: ProcessScore[]) {
+  levelCount.value = {
+    score_last: 0,
+    score_60: 0,
+    score_70: 0,
+    score_80: 0,
+    score_90: 0,
+    len: result[0].length
+  }
+  currentPStudentsR.value = []
+  ;(result[0] as Student[]).forEach((student) => {
+    const stuD: StudentProcessScore = JSON.parse(JSON.stringify(student))
+    currentPStudentsR.value.push(stuD)
     let temp = 0
     stuD.psTeachers = []
     stuD.averageScore = temp
@@ -58,82 +88,53 @@ const collectPS = (pses: ProcessScore[]) => {
         stuD.currentTeacherScore = psDetail.score
       }
     })
-    stuD.averageScore = temp / stuD.psTeachers.length
-    stuD.averageScore = ~~(stuD.averageScore * 100) / 100
+    stuD.psTeachers.length > 0 && (stuD.averageScore = temp / stuD.psTeachers.length)
+    stuD.averageScore = Math.round(stuD.averageScore)
+
+    if (stuD.averageScore >= 90) {
+      levelCount.value.score_90++
+    } else if (stuD.averageScore >= 80 && stuD.averageScore < 90) {
+      levelCount.value.score_80++
+    } else if (stuD.averageScore >= 70 && stuD.averageScore < 80) {
+      levelCount.value.score_70++
+    } else if (stuD.averageScore >= 60 && stuD.averageScore < 70) {
+      levelCount.value.score_60++
+    } else if (stuD.averageScore < 60) {
+      levelCount.value.score_last++
+    }
   })
 }
 
-const result = await Promise.all([
-  getInfosService(),
-  listProcessScoresService(props.pid, props.auth),
-  listPorcessFilesService(props.pid, props.auth)
-])
-
-const currentPStudentsR: StudentProcessScore[] =
-  props.auth == PA_REVIEW ? result[0].groupStudentsS : result[0].tutortudentsS
-
-collectPS(result[1])
-processFilesR.value = result[2]
-
-const processFileC = computed(
-  () => (sid: string) => processFilesR.value.find((pf) => pf.studentId == sid)
-)
-
-const scoreCountsC = computed<{
-  score_90: number
-  score_80: number
-  score_70: number
-  score_60: number
-  score_last: number
-  len: number
-}>(() => {
-  let sc_90 = 0,
-    sc_80 = 0,
-    sc_70 = 0,
-    sc_60 = 0,
-    sc_last = 0,
-    len = currentPStudentsR.length ?? 0
-
-  currentPStudentsR.forEach((psd) => {
-    const stand = 89.5
-    if (!psd.averageScore || psd.averageScore < stand - 30) {
-      sc_last++
-      return
-    }
-
-    if (psd.averageScore >= stand) {
-      sc_90++
-      return
-    } else if (psd.averageScore >= stand - 10 && psd.averageScore < stand) {
-      sc_80++
-      return
-    } else if (psd.averageScore >= stand - 20 && psd.averageScore < stand - 10) {
-      sc_70++
-      return
-    } else if (psd.averageScore >= stand - 30 && psd.averageScore < stand - 20) {
-      sc_60++
-      return
-    }
-  })
-  return {
-    score_90: sc_90,
-    score_80: sc_80,
-    score_70: sc_70,
-    score_60: sc_60,
-    score_last: sc_last,
-    len: len
-  }
-})
-
+//
+const currentProcessAttach = useProcessStore().processesS.find((ps) => ps.id == props.pid)
+  ?.studentAttach
 // ---------------------
 const addProcessScoreF = (ps: ProcessScore) => {
   addPorcessScoreService(ps, props.auth).then((pses) => collectPS(pses))
 }
 
-const clickAttachF = (pname: string) => {
-  getProcessFileService(pname)
+//
+const processFileC = computed(
+  () => (sid: string, number: number) =>
+    processFilesR.value.find((pf) => pf.studentId == sid && pf.number == number)
+)
+
+const clickAttachF = (sid: string, number: number) => {
+  const pname = processFilesR.value.find((pf) => pf.studentId == sid && pf.number == number)?.detail
+  pname && getProcessFileService(pname)
 }
-// ------------------------
+// --------------------
+// 评分
+const gradingDialog = defineAsyncComponent(() => import('./GradingDialog.vue'))
+const currentStudentR = ref<StudentProcessScore>()
+
+const gradingDialogVisable = ref(false)
+const gradeF = (s: StudentProcessScore) => {
+  gradingDialogVisable.value = true
+  currentStudentR.value = s
+}
+// 传给子组件
+const closeF = () => (gradingDialogVisable.value = false)
 </script>
 <template>
   <GroupTeacherView />
@@ -141,17 +142,17 @@ const clickAttachF = (pname: string) => {
     <el-col style="margin-bottom: 10px">
       <div>
         优秀
-        <el-tag>{{ scoreCountsC.score_90 }}</el-tag>
+        <el-tag>{{ levelCount.score_90 }}</el-tag>
         ； 良好
-        <el-tag>{{ scoreCountsC.score_80 }}</el-tag>
+        <el-tag>{{ levelCount.score_80 }}</el-tag>
         ； 中等
-        <el-tag>{{ scoreCountsC.score_70 }}</el-tag>
+        <el-tag>{{ levelCount.score_70 }}</el-tag>
         ； 及格
-        <el-tag>{{ scoreCountsC.score_60 }}</el-tag>
+        <el-tag>{{ levelCount.score_60 }}</el-tag>
         ； 不及格
-        <el-tag>{{ scoreCountsC.score_last }}</el-tag>
+        <el-tag>{{ levelCount.score_last }}</el-tag>
         ； 共
-        <el-tag>{{ scoreCountsC.len }}</el-tag>
+        <el-tag>{{ levelCount.len }}</el-tag>
       </div>
       <el-table :data="currentPStudentsR">
         <el-table-column type="index" label="#" width="50" />
@@ -166,14 +167,16 @@ const clickAttachF = (pname: string) => {
         </el-table-column>
         <el-table-column label="附件">
           <template #default="scope">
-            <el-icon
-              class="attach"
-              :size="24"
-              color="red"
-              v-if="processFileC(scope.row.id)"
-              @click="clickAttachF(processFileC(scope.row.id)?.detail ?? '')">
-              <Link />
-            </el-icon>
+            <template v-for="(attach, index) of currentProcessAttach" :key="index">
+              <el-button
+                type="success"
+                style="margin-bottom: 5px"
+                @click="clickAttachF(scope.row.id, attach.number!)"
+                v-if="processFileC(scope.row.id, attach.number!)">
+                {{ attach.name }}
+              </el-button>
+              <br />
+            </template>
           </template>
         </el-table-column>
         <el-table-column label="评分/平均分">
@@ -185,9 +188,9 @@ const clickAttachF = (pname: string) => {
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="打分">
+        <el-table-column label="操作" width="90">
           <template #default="scope">
-            <el-button type="primary" @click="gradeF(scope.row)">打分</el-button>
+            <el-button type="primary" @click="gradeF(scope.row)">评分</el-button>
           </template>
         </el-table-column>
       </el-table>
