@@ -2,7 +2,11 @@
 import { Check } from '@element-plus/icons-vue'
 import { useProcessStore } from '@/stores/ProcessStore'
 import type { Process, ProcessFile, StudentAttach } from '@/types'
-import { listProcessFilesService, uploadFileService } from '@/services/StudentService'
+import {
+  listProcessFilesService,
+  uploadFileSignatureService,
+  uploadFileService
+} from '@/services/StudentService'
 import { useUserStore } from '@/stores/UserStore'
 import { createElNotificationSuccess, createMessageDialog } from '@/components/message'
 import { GoldMedal, WarningFilled } from '@element-plus/icons-vue'
@@ -61,12 +65,25 @@ const uploadF = async () => {
     createMessageDialog(`请转为${selectAttachR.value?.ext}版上传`)
     return
   }
-  const fileName = `${userR.student?.queueNumber}-${userR.name}-${userR.number}-${selectAttachR.value?.name}${ext}`
 
+  const fileName = `${userR.student?.queueNumber}-${userR.name}-${userR.number}-${selectAttachR.value?.name}${ext}`
+  if (fileName.includes('/') || fileName.includes('\\')) {
+    createMessageDialog(`文件错误`)
+    return
+  }
   const fdata = new FormData()
   fdata.append('pname', selectAttachR.value?.name ?? '')
   fdata.append('file', fileR.value, fileName)
-  processFilesR.value = await uploadFileService(props.pid, selectAttachR.value?.number!, fdata)
+  const sign = await uploadFileSignatureService(
+    `${props.pid}${selectAttachR.value?.name}${fileName}${selectAttachR.value?.number!}`
+  )
+
+  processFilesR.value = await uploadFileService(
+    props.pid,
+    selectAttachR.value?.number!,
+    sign,
+    fdata
+  )
   createElNotificationSuccess('上传成功')
   visableSubmitR.value = false
   // 再次选择时，需清空值

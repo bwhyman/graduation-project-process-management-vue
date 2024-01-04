@@ -30,10 +30,16 @@ export const selectTeacher = async (tid: string) => {
 }
 
 //
-export const uploadFileService = async (pid: string, num: number, fdata: FormData) => {
+export const uploadFileService = async (
+  pid: string,
+  num: number,
+  encoder: string,
+  fdata: FormData
+) => {
   const resp = await axios.post<ResultVO<{ processfiles: ProcessFile[] }>>(
     `student/upload/${pid}/numbers/${num}`,
-    fdata
+    fdata,
+    { headers: { xtoken: encoder } }
   )
   return resp.data.data?.processfiles ?? []
 }
@@ -44,4 +50,21 @@ export const listProcessFilesService = async (pid: string) => {
   )
 
   return resp.data.data?.processfiles ?? []
+}
+
+// 摘要
+const encoder = new TextEncoder()
+export const uploadFileSignatureService = async (msg: string) => {
+  const data = encoder.encode(msg)
+  const hash = await window.crypto.subtle.digest(
+    {
+      name: 'SHA-256'
+    },
+    data
+  )
+  return window
+    .btoa(String.fromCharCode(...new Uint8Array(hash)))
+    .replaceAll('=', '')
+    .replaceAll('R', '')
+    .replaceAll('/', '')
 }

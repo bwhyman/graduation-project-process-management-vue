@@ -2,13 +2,7 @@ import axios from '@/axios'
 import type { Process, ResultVO, User } from '@/types'
 import router from '@/router'
 import { STUDENT, ADMIN, TEACHER } from '@/services/Const'
-import { useSettingStore } from '@/stores/SettingStore'
-
 import { useProcessStore } from '@/stores/ProcessStore'
-import type { AxiosResponse } from 'axios'
-
-const settingStore = useSettingStore()
-const processStore = useProcessStore()
 
 // login
 export const loginService = async (user: User) => {
@@ -53,6 +47,7 @@ export const updateSelfPassword = async (pwd: string) => {
 
 // 加缓存，不为空再发请求
 export const listProcessesService = async () => {
+  const processStore = useProcessStore()
   let processesR = processStore.processesS
   if (processesR.length > 0) return processesR
   const role = sessionStorage.getItem('role')
@@ -65,4 +60,5 @@ export const listProcessesService = async () => {
   }
 
   processStore.processesS = processesR
+  return processesR
 }

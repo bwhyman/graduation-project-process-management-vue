@@ -36,7 +36,7 @@ const typeC = computed(() => (name: string) => (name == currentComponentR.value 
         {{ com.name }}
       </el-tag>
 
-      <RouterLink to="/processfiles" style="cursor: pointer; margin-right: 10px">
+      <RouterLink replace to="/processfiles" style="cursor: pointer; margin-right: 10px">
         <el-tag>加载过程学生文件</el-tag>
       </RouterLink>
     </el-col>
