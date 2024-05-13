@@ -19,14 +19,7 @@ export const listGroupStudentsService = async () => {
   const resp = await axios.get<ResultVO<{ students: User[] }>>('teacher/students/group')
   const gstudentsR = storeToRefs(groupStore).groupStudentsS
   gstudentsR.value = resp.data.data?.students ?? []
-  // 学生按答辩顺序排序
-  gstudentsR.value.sort((x, y) => (x.student?.queueNumber ?? 0) - (y.student?.queueNumber ?? 0))
   return gstudentsR.value
-  // const resp = await axios.get<ResultVO<{ students: User[] }>>('teacher/students/group')
-  // const students = resp.data.data?.students.sort(
-  //   (x, y) => (x.student?.queueNumber ?? 0) - (y.student?.queueNumber ?? 0)
-  // )
-  // return students
 }
 
 //
