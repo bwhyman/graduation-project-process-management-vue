@@ -17,7 +17,7 @@ export function readStudentFile(file: Blob) {
     reader.onloadend = () => {
       resolve(students)
     }
-    reader.readAsBinaryString(file)
+    reader.readAsArrayBuffer(file)
   })
 }
 
@@ -42,7 +42,7 @@ export function readTeacherFile(file: Blob) {
     reader.onloadend = () => {
       resolve(teachers)
     }
-    reader.readAsBinaryString(file)
+    reader.readAsArrayBuffer(file)
   })
 }
 
@@ -189,18 +189,20 @@ export const readStudents2 = (file: Blob) => {
       const wb = XLSX.read(data, { type: 'binary' })
       const sheet = wb.Sheets[wb.SheetNames[0]]
       XLSX.utils.sheet_to_json(sheet).forEach((r: any) => {
-        students.push({
-          name: r['姓名'],
-          number: r['账号'].toString(),
-          queueNumber: r['#'].toString(),
-          projectTitle: r['题目'].toString(),
-          groupNumber: r['分组'].toString()
-        })
+        if (r['#']) {
+          students.push({
+            name: r['姓名'],
+            number: r['账号'].toString(),
+            queueNumber: r['#'].toString(),
+            projectTitle: r['题目'].toString(),
+            groupNumber: r['分组'].toString()
+          })
+        }
       })
     }
     reader.onloadend = () => {
       resolve(students)
     }
-    reader.readAsBinaryString(file)
+    reader.readAsArrayBuffer(file)
   })
 }

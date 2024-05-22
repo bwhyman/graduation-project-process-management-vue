@@ -1,6 +1,9 @@
 # graduation-project-process-management-vue
 
 ### Update
+#### 2024.05.22
+小组成绩按总分排序。
+
 #### 2024.01.04
 学生上传文件请求添加摘要验证。  
 

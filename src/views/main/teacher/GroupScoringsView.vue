@@ -61,6 +61,8 @@ students.forEach((stu) => {
   }
 })
 
+studentsScores.sort((x, y) => y.totalScore - x.totalScore)
+
 //
 const processTitleC = computed(() => (pro: Process) => `${pro.name}${pro.point}%`)
 
