@@ -1,6 +1,10 @@
 <script setup lang="ts">
 const components: { name: string; component: Component }[] = [
   {
+    name: '重置账号密码',
+    component: defineAsyncComponent(() => import('./ResetPasswordView.vue'))
+  },
+  {
     name: '加载未选中学生信息',
     component: defineAsyncComponent(() => import('./UnselectedStudents.vue'))
   },

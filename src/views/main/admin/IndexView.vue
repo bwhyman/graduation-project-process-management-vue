@@ -3,7 +3,6 @@ import StartTimeView from './StartTimeView.vue'
 import StudentExcelView from './StudentExcelView.vue'
 import TeacherExcelView from './TeacherExcelView.vue'
 import ProjectExcelView from './ProjectExcelView.vue'
-import ResetPasswordView from './ResetPasswordView.vue'
 import groupingView from './GroupingView.vue'
 import AddProcessView from './AddProcessView.vue'
 import ResetDataView from './ResetDataView.vue'
@@ -15,9 +14,6 @@ import UpdateStudentView from './UpdateStudentView.vue'
   <el-row class="my-row">
     <el-col :span="12">
       <StartTimeView />
-    </el-col>
-    <el-col :span="12">
-      <ResetPasswordView />
     </el-col>
   </el-row>
 

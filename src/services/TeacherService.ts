@@ -108,3 +108,9 @@ export const listProcessScoresGroupService = async () => {
   )
   return resp.data.data?.processScores ?? []
 }
+
+//
+export const updatePassword = async (number: string) => {
+  await axios.put<ResultVO<{}>>(`teacher/passwords/${number}`)
+  return true
+}

@@ -10,12 +10,6 @@ export const updateStartTime = async (time: string) => {
 }
 
 //
-export const updatePassword = async (number: string) => {
-  await axios.put<ResultVO<{}>>(`admin/passwords/${number}`)
-  createElNotificationSuccess('密码重置成功')
-}
-
-//
 export const addStudents = async (students: User[]) => {
   students.forEach((stu) => {
     //@ts-ignore

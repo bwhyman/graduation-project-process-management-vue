@@ -53,18 +53,6 @@ export const listProcessFilesService = async (pid: string) => {
 }
 
 // 摘要
-const encoder = new TextEncoder()
 export const uploadFileSignatureService = async (msg: string) => {
-  const data = encoder.encode(msg)
-  const hash = await window.crypto.subtle.digest(
-    {
-      name: 'SHA-256'
-    },
-    data
-  )
-  return window
-    .btoa(String.fromCharCode(...new Uint8Array(hash)))
-    .replaceAll('=', '')
-    .replaceAll('R', '')
-    .replaceAll('/', '')
+  return window.btoa(window.encodeURIComponent(msg)).substring(0, 10)
 }

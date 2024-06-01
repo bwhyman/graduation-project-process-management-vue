@@ -181,8 +181,8 @@ const closeF = () => (gradingDialogVisable.value = false)
         </el-table-column>
         <el-table-column label="评分/平均分">
           <template #default="scope">
-            <el-text type="primary" size="large">{{ scope.row.currentTeacherScore }}</el-text>
-            / {{ scope.row.averageScore }}
+            {{ scope.row.currentTeacherScore }} /
+            <el-text type="primary" size="large">{{ scope.row.averageScore }}</el-text>
             <br />
             <span v-for="(t, index) of scope.row.psTeachers" :key="index">
               {{ t.teacherName }};
