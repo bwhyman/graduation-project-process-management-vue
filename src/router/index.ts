@@ -42,7 +42,6 @@ const routes: RouteRecordRaw[] = [
         }
       },
       {
-        props: true,
         path: 'processfiles/:pid?',
         component: () => import('@/views/main/teacher/functions/ListFilesView.vue'),
         meta: {

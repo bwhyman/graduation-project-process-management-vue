@@ -7,7 +7,7 @@ import {
   listPorcessFilesService
 } from '@/services/TeacherService'
 import type { ProcessFile, Student, StudentAttach } from '@/types'
-const props = defineProps<{ pid?: string }>()
+const route = useRoute()
 const result = await Promise.all([listProcessesService(), listGroupStudentsService()])
 
 const studentsR = ref<Student[]>(result[1])
@@ -15,17 +15,17 @@ const processFilesR = ref<ProcessFile[]>([])
 // 加载带学生附件过程
 const processesS = result[0].filter((ps) => ps.studentAttach)
 
-const selectProcessR = ref(props.pid)
+const selectProcessR = ref(route.params?.pid)
 const studentAttachsR = ref<StudentAttach[]>([])
 
-const selectProcessChangeF = async () => {
+const selectProcessChangeF = () => {
   router.push(`/processfiles/${selectProcessR.value}`)
 }
 watch(
-  props,
+  route,
   async () => {
-    if (!props.pid) return
-    const selectProcess = processesS.find((p) => p.id == props.pid)
+    if (!route.params?.pid) return
+    const selectProcess = processesS.find((p) => p.id == route.params?.pid)
     if (!selectProcess) return
     studentAttachsR.value = selectProcess.studentAttach!
     processFilesR.value = await listPorcessFilesService(selectProcess?.id!, selectProcess?.auth!)
