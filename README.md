@@ -1,6 +1,9 @@
 # graduation-project-process-management-vue
 
 ### Update
+#### 2024.06.04
+添加过程评分按项占比自动分配。
+
 #### 2024.05.22
 小组成绩按总分排序。
 

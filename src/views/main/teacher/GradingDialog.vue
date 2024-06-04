@@ -19,17 +19,24 @@ const processItems = process?.items ?? []
 const userStore = useUserStore()
 const currentTeacherScore = props.student.psTeachers?.find((t) => t.teacherId == userStore.userS.id)
 const scoreInfoR = ref<ProcessScore>({})
-const psDetailR = ref<PSDetail>({ detail: [], score: currentTeacherScore?.score ?? 0 })
+const psDetailR = ref<PSDetail>({})
+if (currentTeacherScore) {
+  psDetailR.value = currentTeacherScore
+} else {
+  psDetailR.value.score = 0
+  psDetailR.value.detail = []
+  processItems.forEach((item) => {
+    psDetailR.value.detail?.push({ score: 0, number: item.number! })
+  })
+}
 
-processItems.forEach((item, index) => {
-  const score =
-    (currentTeacherScore &&
-      (currentTeacherScore?.detail as { number: number; score: number }[])[index].score) ??
-    0
-
-  psDetailR.value.detail!.push({
-    number: item.number!,
-    score: score
+const autoScore = ref(currentTeacherScore?.score ?? 0)
+watch(autoScore, () => {
+  const score = autoScore.value
+  psDetailR.value.score = score
+  psDetailR.value.detail?.forEach((scoreD, index) => {
+    const item = processItems[index]
+    scoreD.score = Math.round(score * 0.01 * item.point!)
   })
 })
 
@@ -46,8 +53,8 @@ const onInputF = (index: number) => {
   let temp = 0
   psDetailR.value.detail?.forEach((d) => {
     temp += d.score
-    psDetailR.value.score = temp
   })
+  psDetailR.value.score = temp
 }
 
 // ---------------------
@@ -58,22 +65,16 @@ const submitF = () => {
   psDetailR.value.teacherName = userStore.userS.name
   scoreInfoR.value.detail = toRaw(psDetailR.value)
   currentTeacherScore && (scoreInfoR.value.id = currentTeacherScore.processScoreId)
-
   props.addProcessScore(toRaw(scoreInfoR.value))
   props.close()
+}
+//
+const onInputAutoF = () => {
+  autoScore.value > 100 && (autoScore.value = 100)
 }
 
 //
 const wWidth = ref(window.innerWidth)
-// onMounted(() => {
-//   wWidth.value = window.innerWidth
-//   window.addEventListener('resize', () => {
-//     wWidth.value = window.innerWidth
-//   })
-// })
-// onUnmounted(() => {
-//   window.removeEventListener('resize', () => {})
-// })
 const widthC = computed(() => {
   return wWidth.value < 768 ? '80%' : '50%'
 })
@@ -83,6 +84,18 @@ const widthC = computed(() => {
     <p>{{ props.student.name }}；平均分： {{ props.student.averageScore }}；</p>
 
     <br />
+    <el-row :gutter="10">
+      <el-col :span="6" style="margin-top: 5px; text-align: right">
+        <span>自动分布</span>
+      </el-col>
+      <el-col :span="10">
+        <el-input
+          v-model.number="autoScore"
+          style="margin-bottom: 5px"
+          type="number"
+          v-on:input="onInputAutoF" />
+      </el-col>
+    </el-row>
     <el-row :gutter="10" v-for="(p, index) of processItems" :key="index">
       <el-col :span="6" style="margin-top: 5px; text-align: right">
         <span>{{ p.name }}-{{ p.point }}</span>
