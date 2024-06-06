@@ -20,6 +20,8 @@ import type {
 import { PA_REVIEW } from '@/services/Const'
 import GroupTeacherView from './GroupTeacherView.vue'
 import { useProcessStore } from '@/stores/ProcessStore'
+import { createElNotificationSuccess } from '@/components/message'
+import { Brush, Box } from '@element-plus/icons-vue'
 
 // --------------------
 const props = defineProps<{ pid: string; auth: string }>()
@@ -119,9 +121,10 @@ const processFileC = computed(
     processFilesR.value.find((pf) => pf.studentId == sid && pf.number == number)
 )
 
-const clickAttachF = (sid: string, number: number) => {
+const clickAttachF = async (sid: string, number: number) => {
+  createElNotificationSuccess('下载中')
   const pname = processFilesR.value.find((pf) => pf.studentId == sid && pf.number == number)?.detail
-  pname && getProcessFileService(pname)
+  pname && (await getProcessFileService(pname))
 }
 // --------------------
 // 评分
@@ -169,7 +172,8 @@ const closeF = () => (gradingDialogVisable.value = false)
           <template #default="scope">
             <template v-for="(attach, index) of currentProcessAttach" :key="index">
               <el-button
-                type="success"
+                :icon="attach.number == 1 ? Box : Brush"
+                :color="attach.number == 1 ? '#409EFF' : '#626aef'"
                 style="margin-bottom: 5px"
                 @click="clickAttachF(scope.row.id, attach.number!)"
                 v-if="processFileC(scope.row.id, attach.number!)">

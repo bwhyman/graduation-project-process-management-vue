@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createElNotificationSuccess } from '@/components/message'
 import router from '@/router'
 import { listProcessesService } from '@/services'
 import {
@@ -7,6 +8,8 @@ import {
   listPorcessFilesService
 } from '@/services/TeacherService'
 import type { ProcessFile, Student, StudentAttach } from '@/types'
+import { Brush, Box } from '@element-plus/icons-vue'
+
 const route = useRoute()
 const result = await Promise.all([listProcessesService(), listGroupStudentsService()])
 
@@ -39,9 +42,10 @@ const processFileC = computed(
     processFilesR.value.find((pf) => pf.studentId == sid && pf.number == number)
 )
 
-const clickAttachF = (sid: string, number: number) => {
+const clickAttachF = async (sid: string, number: number) => {
+  createElNotificationSuccess('下载中')
   const pname = processFilesR.value.find((pf) => pf.studentId == sid && pf.number == number)?.detail
-  pname && getProcessFileService(pname)
+  pname && (await getProcessFileService(pname))
 }
 </script>
 <template>
@@ -71,7 +75,8 @@ const clickAttachF = (sid: string, number: number) => {
           <template #default="scope">
             <template v-for="(attach, index) of studentAttachsR" :key="index">
               <el-button
-                type="success"
+                :icon="attach.number == 1 ? Box : Brush"
+                :color="attach.number == 1 ? '#409EFF' : '#626aef'"
                 style="margin-bottom: 5px"
                 @click="clickAttachF(scope.row.id, attach.number!)"
                 v-if="processFileC(scope.row.id, attach.number!)">

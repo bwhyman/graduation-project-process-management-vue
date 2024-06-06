@@ -13,10 +13,14 @@ processes.forEach((ps) => {
 })
 const route = useRoute()
 const activeIndexR = ref('')
-watch(route, () => {
-  const p = menus.find((mn) => route.path.includes(mn.path))
-  activeIndexR.value = p?.path ?? ''
-})
+watch(
+  route,
+  () => {
+    const p = menus.find((mn) => mn.path == route.path)
+    activeIndexR.value = p?.path ?? ''
+  },
+  { immediate: true }
+)
 </script>
 <template>
   <el-menu :default-active="activeIndexR" mode="horizontal" router>
