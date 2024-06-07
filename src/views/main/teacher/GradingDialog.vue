@@ -21,7 +21,7 @@ const currentTeacherScore = props.student.psTeachers?.find((t) => t.teacherId ==
 const scoreInfoR = ref<ProcessScore>({})
 const psDetailR = ref<PSDetail>({})
 if (currentTeacherScore) {
-  psDetailR.value = currentTeacherScore
+  psDetailR.value = JSON.parse(JSON.stringify(toRaw(currentTeacherScore)))
 } else {
   psDetailR.value.score = 0
   psDetailR.value.detail = []
@@ -34,10 +34,19 @@ const autoScore = ref(currentTeacherScore?.score ?? 0)
 watch(autoScore, () => {
   const score = autoScore.value
   psDetailR.value.score = score
-  psDetailR.value.detail?.forEach((scoreD, index) => {
-    const item = processItems[index]
-    scoreD.score = Math.round(score * 0.01 * item.point!)
-  })
+  if (!psDetailR.value.detail) return
+  let temp = 0
+  // 基于随机数计算项得分
+  for (let index = 0; index < psDetailR.value.detail?.length; index++) {
+    if (index === psDetailR.value.detail?.length - 1) {
+      psDetailR.value.detail[index].score = score - temp
+      return
+    }
+    const result = score * 0.01 * processItems[index].point!
+    const randomResult = Math.random() > 0.5 ? Math.ceil(result) : Math.floor(result)
+    psDetailR.value.detail[index].score = randomResult
+    temp += randomResult
+  }
 })
 
 // ----------------------
@@ -93,7 +102,7 @@ const widthC = computed(() => {
           v-model.number="autoScore"
           style="margin-bottom: 5px"
           type="number"
-          v-on:input="onInputAutoF" />
+          @input="onInputAutoF" />
       </el-col>
     </el-row>
     <el-row :gutter="10" v-for="(p, index) of processItems" :key="index">

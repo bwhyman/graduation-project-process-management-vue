@@ -1,6 +1,9 @@
 # graduation-project-process-management-vue
 
 ### Update
+#### 2024.06.08
+修复随机数过程项评分最终成绩不匹配。
+
 #### 2024.06.04
 添加过程评分按项占比自动分配。
 
