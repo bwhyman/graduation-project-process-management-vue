@@ -35,25 +35,22 @@ watch(autoScore, () => {
   const score = autoScore.value
   psDetailR.value.score = score
   if (!psDetailR.value.detail) return
-  let temp = 0
   // 基于随机数计算项得分
+  let temp = 0
   const psDetailTemp = [...psDetailR.value.detail]
-  for (let index = 0; index < psDetailR.value.detail?.length; index++) {
+  while (psDetailTemp.length > 1) {
     const randomIndex = Math.floor(Math.random() * psDetailTemp.length)
     const psDetail = psDetailTemp[randomIndex]
-    if (index === psDetailR.value.detail?.length - 1) {
-      psDetail.score = score - temp
-      break
-    }
     const item = processItems.find((pi) => pi.number === psDetail.number)
     const result = score * 0.01 * (item?.point ?? 0)
-    const randomResult = Math.random() > 0.5 ? Math.ceil(result) : Math.floor(result)
-    psDetail.score = randomResult
+    const randomScore = Math.random() > 0.5 ? Math.ceil(result) : Math.floor(result)
+    psDetail.score = randomScore
     psDetailTemp.splice(randomIndex, 1)
-    temp += randomResult
+    temp += randomScore
   }
+  // 最后一项填充剩余分数
+  psDetailTemp[0].score = score - temp
 })
-
 // ----------------------
 
 const onFocusF = (event: FocusEvent) => {
@@ -95,28 +92,30 @@ const widthC = computed(() => {
 </script>
 <template>
   <el-dialog v-model="dialogVisible" title="Grading" :width="widthC" @close="props.close">
-    <p>{{ props.student.name }}；平均分： {{ props.student.averageScore }}；</p>
-
-    <br />
-    <el-row :gutter="10">
-      <el-col :span="6" style="margin-top: 5px; text-align: right">
-        <span>自动分布</span>
+    <el-row :gutter="10" class="row">
+      <el-col :span="6" class="col-title">
+        <el-text type="primary" size="large">{{ props.student.name }}</el-text>
+        平均分
       </el-col>
+      <el-col :span="10">
+        <el-text type="primary" size="large">{{ props.student.averageScore }}</el-text>
+      </el-col>
+    </el-row>
+
+    <el-row :gutter="10" class="row">
+      <el-col :span="6" class="col-title">自动分配评分</el-col>
       <el-col :span="10">
         <el-input
           v-model.number="autoScore"
-          style="margin-bottom: 5px"
           type="number"
-          @input="onInputAutoF" />
+          @input="onInputAutoF"
+          @keyup.enter="submitF" />
       </el-col>
     </el-row>
-    <el-row :gutter="10" v-for="(p, index) of processItems" :key="index">
-      <el-col :span="6" style="margin-top: 5px; text-align: right">
-        <span>{{ p.name }}-{{ p.point }}</span>
-      </el-col>
+    <el-row :gutter="10" class="row" v-for="(p, index) of processItems" :key="index">
+      <el-col :span="6" class="col-title">{{ p.name }}-{{ p.point }}</el-col>
       <el-col :span="10">
         <el-input
-          style="margin-bottom: 5px"
           type="number"
           v-on:input="onInputF(index)"
           :value="psDetailR.detail![index].score"
@@ -125,16 +124,14 @@ const widthC = computed(() => {
       </el-col>
     </el-row>
     <br />
-    <el-row :gutter="10" style="margin-bottom: 5px">
-      <el-col :span="6" style="text-align: right">
-        <span>评分</span>
-      </el-col>
+    <el-row :gutter="10" class="row">
+      <el-col :span="6" class="col-title">评分</el-col>
       <el-col :span="4">
-        {{ psDetailR.score }}
+        <el-text type="primary" size="large">{{ psDetailR.score }}</el-text>
       </el-col>
     </el-row>
 
-    <el-row :gutter="10">
+    <el-row :gutter="10" class="row">
       <el-col :span="6"></el-col>
       <el-col :span="12">
         <el-button type="primary" @click="submitF">提交</el-button>
@@ -142,3 +139,12 @@ const widthC = computed(() => {
     </el-row>
   </el-dialog>
 </template>
+<style scoped>
+.row {
+  margin-bottom: 5px;
+  align-items: center;
+}
+.col-title {
+  text-align: right;
+}
+</style>
