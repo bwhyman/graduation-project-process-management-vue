@@ -37,14 +37,19 @@ watch(autoScore, () => {
   if (!psDetailR.value.detail) return
   let temp = 0
   // 基于随机数计算项得分
+  const psDetailTemp = [...psDetailR.value.detail]
   for (let index = 0; index < psDetailR.value.detail?.length; index++) {
+    const randomIndex = Math.floor(Math.random() * psDetailTemp.length)
+    const psDetail = psDetailTemp[randomIndex]
     if (index === psDetailR.value.detail?.length - 1) {
-      psDetailR.value.detail[index].score = score - temp
-      return
+      psDetail.score = score - temp
+      break
     }
-    const result = score * 0.01 * processItems[index].point!
+    const item = processItems.find((pi) => pi.number === psDetail.number)
+    const result = score * 0.01 * (item?.point ?? 0)
     const randomResult = Math.random() > 0.5 ? Math.ceil(result) : Math.floor(result)
-    psDetailR.value.detail[index].score = randomResult
+    psDetail.score = randomResult
+    psDetailTemp.splice(randomIndex, 1)
     temp += randomResult
   }
 })
