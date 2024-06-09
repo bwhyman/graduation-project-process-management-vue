@@ -122,7 +122,6 @@ const processFileC = computed(
 )
 
 const clickAttachF = async (sid: string, number: number) => {
-  createElNotificationSuccess('下载中')
   const pname = processFilesR.value.find((pf) => pf.studentId == sid && pf.number == number)?.detail
   pname && (await getProcessFileService(pname))
 }

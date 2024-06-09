@@ -1,6 +1,7 @@
 import axios from '@/axios'
-import type { ProcessFile, ProcessScore, ResultVO, User } from '@/types'
+import type { ProcessFile, ProcessScore, Progress, ResultVO, User } from '@/types'
 import { useInfosStore } from '@/stores/InfosStore'
+import { createProgressNotification } from '@/components/progress'
 
 // 获取指导学生
 export const listTutorStudentsService = async () => {
@@ -87,9 +88,23 @@ export const getProcessScoresService = async () => {
 }
 
 //
-export const getProcessFileService = async (pname: string) => {
-  pname = encodeURIComponent(pname)
-  const resp = await axios.get(`teacher/download/${pname}`, { responseType: 'blob' })
+export const getProcessFileService = async (name: string) => {
+  const pname = encodeURIComponent(name)
+  const progressR = ref<{ progress: Progress }>({
+    progress: { percentage: 0, title: name, rate: 0, total: 0, loaded: 0 }
+  })
+  const progNotif = createProgressNotification(progressR.value)
+  const resp = await axios.get(`teacher/download/${pname}`, {
+    responseType: 'blob',
+    onDownloadProgress(ProgressEvent) {
+      if (!ProgressEvent) return
+      progressR.value.progress.percentage = ProgressEvent.progress ?? 0
+      progressR.value.progress.rate = ProgressEvent.rate ?? 0
+      progressR.value.progress.loaded = ProgressEvent.loaded ?? 0
+      progressR.value.progress.total = ProgressEvent.total ?? 0
+    }
+  })
+  progNotif.close()
   const filename = decodeURIComponent(resp.headers['filename'])
   const url = window.URL.createObjectURL(new Blob([resp.data]))
   const link = document.createElement('a')
@@ -97,6 +112,7 @@ export const getProcessFileService = async (pname: string) => {
   link.setAttribute('download', filename)
   document.body.appendChild(link)
   link.click()
+
   window.URL.revokeObjectURL(url)
   document.body.removeChild(link)
 }

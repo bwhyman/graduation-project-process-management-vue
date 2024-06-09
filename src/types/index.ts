@@ -97,7 +97,13 @@ export interface LevelCount {
   score_last: number
   len: number
 }
-
+export interface Progress {
+  percentage: number
+  rate: number
+  total: number
+  loaded: number
+  title: string
+}
 export interface ResultVO<T> {
   code: number
   message?: string
