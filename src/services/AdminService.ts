@@ -62,7 +62,6 @@ export const addProcessService = async (ps: Process) => {
   const processStore = useProcessStore()
   const processesR = storeToRefs(processStore).processesS
   processesR.value = resp.data.data?.processes ?? []
-  createElNotificationSuccess('添加过程成功')
 }
 
 export const resetData = async () => {
@@ -73,11 +72,58 @@ export const resetData = async () => {
 export const listTeachersService = async () => {
   const resp = await axios.get<ResultVO<{ teachers: Teacher[] }>>('admin/teachers')
   const teachers = resp.data.data?.teachers ?? []
-  return { teachers }
+  return teachers
 }
 
 //
 export const addStudentsAll = async (students: Student[]) => {
   await axios.post('admin/students/all', students)
   createElNotificationSuccess('更新学生成功')
+}
+//
+export const listProcessesService = async () => {
+  const processStore = useProcessStore()
+  let processesR = processStore.processesS
+  if (processesR.length > 0) return processesR
+  const resp = await axios.get<ResultVO<{ processes: Process[] }>>('admin/processes')
+  processesR = resp.data.data?.processes ?? []
+  processStore.processesS = processesR
+  return processesR
+}
+//
+export const delProcessService = async (pid: string) => {
+  const resp = await axios.delete<ResultVO<{ processes: Process[] }>>(`admin/processes/${pid}`)
+  const processStore = useProcessStore()
+  processStore.processesS = resp.data.data?.processes ?? []
+  return true
+}
+
+//
+export const updateProcessService = async (process: Process) => {
+  // @ts-ignore
+  process.items = JSON.stringify(process.items)
+  // @ts-ignore
+  process.studentAttach = JSON.stringify(process.studentAttach)
+  const resp = await axios.patch<ResultVO<{ processes: Process[] }>>('admin/processes', process)
+  const processStore = useProcessStore()
+  processStore.processesS = resp.data.data?.processes ?? []
+}
+
+//
+export const getUserService = async (account: string) => {
+  const resp = await axios.get<ResultVO<{ student: Student }>>(`admin/users/${account}`)
+  return resp.data.data?.student
+}
+//
+export const updateStudentTeacherService = async (sid: string, student: Student) => {
+  const user: User = { student: student }
+  // @ts-ignore
+  user.student = JSON.stringify(user.student)
+  const resp = axios.patch(`admin/students/${sid}/student`, user)
+  return true
+}
+//
+export const updateUserGroupService = async (user: User) => {
+  const resp = await axios.patch('admin/groups', user)
+  return true
 }

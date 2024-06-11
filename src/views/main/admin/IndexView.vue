@@ -1,59 +1,50 @@
 <script setup lang="ts">
-import StartTimeView from './StartTimeView.vue'
-import StudentExcelView from './StudentExcelView.vue'
-import TeacherExcelView from './TeacherExcelView.vue'
-import ProjectExcelView from './ProjectExcelView.vue'
-import groupingView from './GroupingView.vue'
-import AddProcessView from './AddProcessView.vue'
-import ResetDataView from './ResetDataView.vue'
-import StudentSelectionView from './StudentSelectionView.vue'
-import UpdateStudentView from './UpdateStudentView.vue'
+const components: { name: string; component: Component }[] = [
+  {
+    name: '过程管理',
+    component: defineAsyncComponent(() => import('./ProcessesView.vue'))
+  },
+  {
+    name: '导入导师表格',
+    component: defineAsyncComponent(() => import('./TeacherExcelView.vue'))
+  },
+  {
+    name: '导入学生表格',
+    component: defineAsyncComponent(() => import('./StudentSelectionView.vue'))
+  },
+  {
+    name: '导入题目/分组/顺序',
+    component: defineAsyncComponent(() => import('./UpdateStudentView.vue'))
+  },
+  {
+    name: '更新学生导师',
+    component: defineAsyncComponent(() => import('./EditStudentVue.vue'))
+  },
+  {
+    name: '更新组',
+    component: defineAsyncComponent(() => import('./UpdateGroupVue.vue'))
+  }
+]
+const currentComponentR = ref()
+const currentComponentC = computed(
+  () => components.find((com) => com.name == currentComponentR.value)?.component
+)
+const typeC = computed(() => (name: string) => (name == currentComponentR.value ? 'danger' : ''))
 </script>
 <template>
-  <!-- start time, reset password -->
   <el-row class="my-row">
-    <el-col :span="12">
-      <StartTimeView />
+    <el-col class="my-col">
+      <el-tag
+        v-for="(com, index) of components"
+        :type="typeC(com.name)"
+        :key="index"
+        @click="currentComponentR = com.name"
+        style="cursor: pointer; margin-right: 10px">
+        {{ com.name }}
+      </el-tag>
     </el-col>
   </el-row>
-
-  <!-- read student excel -->
-  <el-row class="my-row">
-    <el-col :span="12">
-      <StudentExcelView />
-    </el-col>
-    <!-- read teacher excel -->
-    <el-col :span="12">
-      <TeacherExcelView />
-    </el-col>
-  </el-row>
-
-  <!-- read project excel -->
-  <el-row class="my-row">
-    <el-col :span="12">
-      <ProjectExcelView />
-    </el-col>
-    <el-col :span="12">
-      <ResetDataView />
-    </el-col>
-  </el-row>
-  <!-- 分组 -->
-  <el-row class="my-row">
-    <el-col :span="12">
-      <groupingView />
-    </el-col>
-    <el-col :span="12">
-      <AddProcessView />
-    </el-col>
-  </el-row>
-  <el-row class="my-row">
-    <el-col :span="24">
-      <UpdateStudentView />
-    </el-col>
-  </el-row>
-  <el-row class="my-row">
-    <el-col :span="24">
-      <StudentSelectionView />
-    </el-col>
-  </el-row>
+  <template v-if="currentComponentR">
+    <component :is="currentComponentC" />
+  </template>
 </template>

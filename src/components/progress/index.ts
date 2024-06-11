@@ -3,7 +3,7 @@ import ProgressVue from './ProgressVue.vue'
 
 export const createProgressNotification = (progress: { progress: Progress }) => {
   const noti = ElNotification({
-    title: 'Success',
+    title: 'Loading',
     message: h(ProgressVue, progress),
     type: 'success',
     duration: 0

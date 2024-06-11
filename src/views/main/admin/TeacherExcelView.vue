@@ -22,13 +22,17 @@ const submitTeachers = () => {
 }
 </script>
 <template>
-  读取导师表格：
-  <input type="file" @change="readTeacher" />
-  <el-button
-    type="success"
-    :icon="Check"
-    :disabled="teachers.length == 0"
-    @click="submitTeachers"></el-button>
-  <br />
-  {{ teachers[0] }} / {{ teachers?.length }}
+  <el-row class="my-row">
+    <el-col>
+      读取包含带学生成绩数量的导师表格：
+      <input type="file" @change="readTeacher" />
+      <el-button
+        type="success"
+        :icon="Check"
+        :disabled="teachers.length == 0"
+        @click="submitTeachers"></el-button>
+      <br />
+      {{ teachers[0] }} / {{ teachers?.length }}
+    </el-col>
+  </el-row>
 </template>

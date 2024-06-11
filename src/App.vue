@@ -43,4 +43,7 @@ body {
   border-radius: 5px;
   padding: 25px 10px 10px 10px;
 }
+.my-col {
+  margin-bottom: 10px;
+}
 </style>

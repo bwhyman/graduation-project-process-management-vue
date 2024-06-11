@@ -23,15 +23,17 @@ const submitStudents = () => {
 }
 </script>
 <template>
-  <div>
-    读取包含顺序/学号/分组/题目的表格：
-    <input type="file" @change="readStu" />
-    <el-button
-      type="success"
-      :icon="Check"
-      :disabled="students.length == 0"
-      @click="submitStudents"></el-button>
-    <br />
-    {{ students[0] }} / {{ students?.length }}
-  </div>
+  <el-row class="my-row">
+    <el-col>
+      读取包含顺序/学号/分组/题目的表格，用于覆盖：
+      <input type="file" @change="readStu" />
+      <el-button
+        type="success"
+        :icon="Check"
+        :disabled="students.length == 0"
+        @click="submitStudents"></el-button>
+      <br />
+      {{ students[0] }} / {{ students?.length }}
+    </el-col>
+  </el-row>
 </template>

@@ -2,6 +2,7 @@
 import { addStudents, listTeachersService } from '@/services/AdminService'
 import { readStudentForSelectionFile } from '@/services/ExcelUtils'
 import type { User } from '@/types'
+import GroupingView from './GroupingView.vue'
 
 interface TeacherTemp {
   id?: string
@@ -26,7 +27,7 @@ const readStu = async (event: Event) => {
     return
   }
   if (teachersR.value.length == 0) {
-    const { teachers } = await listTeachersService()
+    const teachers = await listTeachersService()
 
     teachers?.forEach((teach) => {
       totalA += teach.A!
@@ -136,23 +137,30 @@ const submitF = () => {
 }
 </script>
 <template>
-  读取学生表格并按成绩自动分配教师：
-  <input type="file" @change="readStu" />
-  <br />
-  <template v-for="(t, index) of teachersR" :key="index">
-    {{ t.name }}/ {{ t.total }}:
-    <br />
-    LevelA:
-    <template v-for="(stu, index) of t.levelA" :key="index">{{ stu.name }};</template>
-    LevelB:
-    <template v-for="(stu, index) of t.levelB" :key="index">{{ stu.name }};</template>
-    LevelC:
-    <template v-for="(stu, index) of t.levelC" :key="index">{{ stu.name }};</template>
-    <br />
-  </template>
-  <br />
-  <template v-if="studentsAmount > 0">
-    <el-button @click="submitF" type="primary">提交</el-button>
-    学生数：{{ studentsAmount }}
-  </template>
+  <el-row class="my-row">
+    <el-col :span="24">
+      读取学生表格并按成绩自动分配教师：
+      <input type="file" @change="readStu" />
+      <br />
+      <template v-for="(t, index) of teachersR" :key="index">
+        {{ t.name }}/ {{ t.total }}:
+        <br />
+        LevelA:
+        <template v-for="(stu, index) of t.levelA" :key="index">{{ stu.name }};</template>
+        LevelB:
+        <template v-for="(stu, index) of t.levelB" :key="index">{{ stu.name }};</template>
+        LevelC:
+        <template v-for="(stu, index) of t.levelC" :key="index">{{ stu.name }};</template>
+        <br />
+      </template>
+      <br />
+      <template v-if="studentsAmount > 0">
+        <el-button @click="submitF" type="primary">提交</el-button>
+        学生数：{{ studentsAmount }}
+      </template>
+    </el-col>
+    <el-col :span="24">
+      <GroupingView />
+    </el-col>
+  </el-row>
 </template>
