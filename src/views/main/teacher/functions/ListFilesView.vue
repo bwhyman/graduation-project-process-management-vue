@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { createElNotificationSuccess } from '@/components/message'
 import router from '@/router'
 import { listProcessesService } from '@/services'
 import {
@@ -13,10 +12,10 @@ import { Brush, Box } from '@element-plus/icons-vue'
 const route = useRoute()
 const result = await Promise.all([listProcessesService(), listGroupStudentsService()])
 
-const studentsR = ref<Student[]>(result[1])
+const studentsR = result[1]
 const processFilesR = ref<ProcessFile[]>([])
 // 加载带学生附件过程
-const processesS = result[0].filter((ps) => ps.studentAttach)
+const processesS = result[0].value.filter((ps) => ps.studentAttach)
 
 const selectProcessR = ref(route.params?.pid)
 const studentAttachsR = ref<StudentAttach[]>([])
@@ -43,7 +42,6 @@ const processFileC = computed(
 )
 
 const clickAttachF = async (sid: string, number: number) => {
-  createElNotificationSuccess('下载中')
   const pname = processFilesR.value.find((pf) => pf.studentId == sid && pf.number == number)?.detail
   pname && (await getProcessFileService(pname))
 }

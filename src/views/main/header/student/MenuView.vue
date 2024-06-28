@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useProcessStore } from '@/stores/ProcessStore'
+import { listProcessesService } from '@/services'
 
 const menus = [
   {
@@ -7,9 +7,9 @@ const menus = [
     path: '/student'
   }
 ]
-const processStore = useProcessStore()
-const studentPR = processStore.processesS
-studentPR.forEach((pr) => {
+const processesS = await listProcessesService()
+
+processesS.value.forEach((pr) => {
   menus.push({ name: pr.name!, path: `/student/processes/${pr.id}` })
 })
 const route = useRoute()

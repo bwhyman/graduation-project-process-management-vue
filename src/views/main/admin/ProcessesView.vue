@@ -4,10 +4,8 @@ import { processAuths } from '@/services/Const'
 import { listProcessesService } from '@/services/AdminService'
 import AddProcessVue from './processes/AddProcessVue.vue'
 import EditProcessVue from './processes/OperationProcessVue.vue'
-import { useProcessStore } from '@/stores/ProcessStore'
-await listProcessesService()
 
-const processesR = storeToRefs(useProcessStore()).processesS
+const processesS = await listProcessesService()
 
 const authC = computed(() => (authVal: string) => processAuths.find((pa) => pa.v === authVal)?.name)
 </script>
@@ -17,7 +15,7 @@ const authC = computed(() => (authVal: string) => processAuths.find((pa) => pa.v
       <AddProcessVue />
     </el-col>
     <el-col :span="24">
-      <el-table :data="processesR">
+      <el-table :data="processesS">
         <el-table-column type="index" label="#" width="50" />
         <el-table-column width="150">
           <template #default="scope">

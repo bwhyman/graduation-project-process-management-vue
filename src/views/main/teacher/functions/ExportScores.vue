@@ -11,10 +11,10 @@ const exportScores = async () => {
 
   const students = result[0]
   const processScores = result[1]
-  const processS = result[2] ?? []
+  const processesS = result[2]
 
   import('@/services/ExcelUtils').then(({ exportScoreExcelFile }) =>
-    exportScoreExcelFile(processS, processScores ?? [], students)
+    exportScoreExcelFile(processesS.value, processScores ?? [], students)
   )
 }
 </script>

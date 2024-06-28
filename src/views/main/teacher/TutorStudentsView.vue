@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { listTutorStudentsService } from '@/services/TeacherService'
-import { useInfosStore } from '@/stores/InfosStore'
 import type { User } from '@/types'
 // 加载指导学生
-await listTutorStudentsService()
-const studentsR = storeToRefs(useInfosStore()).tutortudentsS
+const studentsR = await listTutorStudentsService()
 </script>
 <template>
   <el-row class="my-row">

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
+import { getStoreUserService } from '@/services';
 import { listTeachersService, selectTeacher } from '@/services/StudentService'
-import { useUserStore } from '@/stores/UserStore'
 import type { Student, Teacher } from '@/types'
 
 const result = await listTeachersService()
@@ -10,8 +10,8 @@ const startTimeR = ref(result.starttime)
 const selectVisible = ref(false)
 const selecedTeacherR = ref<Teacher>({})
 
-const userStore = useUserStore()
-const userR = storeToRefs(userStore).userS as Ref<Student>
+const userS = getStoreUserService()
+const userR = userS as Ref<Student>
 
 const select = (teacher: Teacher) => {
   selectVisible.value = true

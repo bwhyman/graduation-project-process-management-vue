@@ -25,16 +25,16 @@ const levelCount: LevelCount = {
   score_70: 0,
   score_80: 0,
   score_90: 0,
-  len: students.length
+  len: students.value.length
 }
 
-students.forEach((stu) => {
+students.value.forEach((stu) => {
   const stuProcessScore: StudentScore = { student: stu, scores: [], totalScore: 0 }
   studentsScores.push(stuProcessScore)
 
   // 获取当前学生当前过程的全部评分
   let currentProcessScore = 0
-  processes?.forEach((p) => {
+  processes.value.forEach((p) => {
     const stuProcessAllScores = processScores.filter(
       (ps) => ps.processId == p.id && ps.studentId == stu.id
     )

@@ -92,7 +92,6 @@ const routes: RouteRecordRaw[] = [
             component: () => import('@/views/main/teacher/functions/IndexView.vue')
           },
           {
-            props: true,
             path: 'processes/:pid/types/:auth',
             component: () => import('@/views/main/teacher/ProcessView.vue')
           }

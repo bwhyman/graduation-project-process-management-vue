@@ -3,34 +3,32 @@ import type { ProcessFile, ProcessScore, Progress, ResultVO, User } from '@/type
 import { useInfosStore } from '@/stores/InfosStore'
 import { createProgressNotification } from '@/components/progress'
 
+const infosStore = useInfosStore()
 // 获取指导学生
 export const listTutorStudentsService = async () => {
-  const groupStore = useInfosStore()
-  if (groupStore.tutortudentsS.length > 0) return groupStore.tutortudentsS
+  const tutortudentsS = infosStore.tutortudentsS
+  if (tutortudentsS.value.length > 0) return tutortudentsS
   const resp = await axios.get<ResultVO<{ students: User[] }>>('teacher/students/tutor')
-  const tutortudentsR = storeToRefs(groupStore).tutortudentsS
-  tutortudentsR.value = resp.data.data?.students ?? []
-  return resp.data.data?.students
+  tutortudentsS.value = resp.data.data?.students ?? []
+  return tutortudentsS
 }
 
 //
 export const listGroupStudentsService = async () => {
-  const groupStore = useInfosStore()
-  if (groupStore.groupStudentsS.length > 0) return groupStore.groupStudentsS
+  const groupStudentsS = infosStore.groupStudentsS
+  if (groupStudentsS.value.length > 0) return groupStudentsS
   const resp = await axios.get<ResultVO<{ students: User[] }>>('teacher/students/group')
-  const gstudentsR = storeToRefs(groupStore).groupStudentsS
-  gstudentsR.value = resp.data.data?.students ?? []
-  return gstudentsR.value
+  groupStudentsS.value = resp.data.data?.students ?? []
+  return groupStudentsS
 }
 
 //
 export const listGroupTeachersService = async () => {
-  const groupStore = useInfosStore()
-  if (groupStore.groupTeachersS.length > 0) return groupStore.groupTeachersS
+  const groupTeachersS = infosStore.groupTeachersS
+  if (groupTeachersS.value.length > 0) return groupTeachersS
   const resp = await axios.get<ResultVO<{ teachers: User[] }>>('teacher/teachers/group')
-  const groupTeachers = storeToRefs(groupStore).groupTeachersS
-  groupTeachers.value = resp.data.data?.teachers ?? []
-  return groupTeachers.value
+  groupTeachersS.value = resp.data.data?.teachers ?? []
+  return groupTeachersS
 }
 
 // 加载指定过程评分

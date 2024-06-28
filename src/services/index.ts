@@ -3,7 +3,10 @@ import type { Process, ResultVO, User } from '@/types'
 import router from '@/router'
 import { STUDENT, ADMIN, TEACHER } from '@/services/Const'
 import { useProcessStore } from '@/stores/ProcessStore'
+import { useUserStore } from '@/stores/UserStore'
 
+const userStore = useUserStore()
+const processStore = useProcessStore()
 // login
 export const loginService = async (user: User) => {
   try {
@@ -47,18 +50,19 @@ export const updateSelfPassword = async (pwd: string) => {
 
 // 加缓存，不为空再发请求
 export const listProcessesService = async () => {
-  const processStore = useProcessStore()
-  let processesR = processStore.processesS
-  if (processesR.length > 0) return processesR
+  const processesS = processStore.processesS
+  if (processesS.value.length > 0) return processesS
   const role = sessionStorage.getItem('role')
   if (role == TEACHER) {
     const resp = await axios.get<ResultVO<{ processes: Process[] }>>('teacher/processes')
-    processesR = resp.data.data?.processes ?? []
+    processesS.value = resp.data.data?.processes ?? []
   } else if (role == STUDENT) {
     const resp = await axios.get<ResultVO<{ processes: Process[] }>>('student/processes')
-    processesR = resp.data.data?.processes ?? []
+    processesS.value = resp.data.data?.processes ?? []
   }
+  return processesS
+}
 
-  processStore.processesS = processesR
-  return processesR
+export const getStoreUserService = () => {
+  return userStore.userS
 }

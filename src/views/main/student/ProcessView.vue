@@ -1,37 +1,36 @@
 <script setup lang="ts">
 import { Check } from '@element-plus/icons-vue'
-import { useProcessStore } from '@/stores/ProcessStore'
 import type { Process, ProcessFile, StudentAttach } from '@/types'
 import {
   listProcessFilesService,
   uploadFileSignatureService,
   uploadFileService
 } from '@/services/StudentService'
-import { useUserStore } from '@/stores/UserStore'
 import { createElNotificationSuccess, createMessageDialog } from '@/components/message'
 import { GoldMedal, WarningFilled } from '@element-plus/icons-vue'
-
-const props = defineProps<{ pid: string }>()
+import { getStoreUserService, listProcessesService } from '@/services'
+const route = useRoute()
+let params = route.params as { pid: string }
 
 const processFilesR = ref<ProcessFile[]>([])
-processFilesR.value = await listProcessFilesService(props.pid)
+processFilesR.value = await listProcessFilesService(params.pid)
 
 const showCheckedC = computed(
   () => (attach: StudentAttach) => processFilesR.value.find((pf) => pf.number == attach.number)
 )
 
-const processStore = useProcessStore()
+const processesS = await listProcessesService()
 const studentPR = ref<Process>()
 watch(
-  props,
+  route,
   () => {
-    studentPR.value = processStore.processesS.find((sp) => sp.id == props.pid)
+    params = route.params as { pid: string }
+    studentPR.value = processesS.value.find((sp) => sp.id == params.pid)
   },
   { immediate: true }
 )
 const selectAttachR = ref<StudentAttach>()
-const userStore = useUserStore()
-const userR = userStore.userS
+const userS = getStoreUserService()
 
 const fileInputR = ref<HTMLInputElement>()
 const visableSubmitR = ref(false)
@@ -66,7 +65,7 @@ const uploadF = async () => {
     return
   }
 
-  const fileName = `${userR.student?.queueNumber}-${userR.name}-${userR.number}-${selectAttachR.value?.name}${ext}`
+  const fileName = `${userS.value.student?.queueNumber}-${userS.value.name}-${userS.value.number}-${selectAttachR.value?.name}${ext}`
   if (fileName.includes('/') || fileName.includes('\\')) {
     createMessageDialog(`文件错误`)
     return
@@ -75,11 +74,11 @@ const uploadF = async () => {
   fdata.append('pname', selectAttachR.value?.name ?? '')
   fdata.append('file', fileR.value, fileName)
   const sign = await uploadFileSignatureService(
-    `${props.pid}${selectAttachR.value?.name}${fileName}${selectAttachR.value?.number!}`
+    `${params.pid}${selectAttachR.value?.name}${fileName}${selectAttachR.value?.number!}`
   )
 
   processFilesR.value = await uploadFileService(
-    props.pid,
+    params.pid,
     selectAttachR.value?.number!,
     sign,
     fdata

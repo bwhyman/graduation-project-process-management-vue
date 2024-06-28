@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { SwitchButton, Setting } from '@element-plus/icons-vue'
-import { useUserStore } from '@/stores/UserStore'
 import router from '@/router'
-const user = storeToRefs(useUserStore()).userS
+import { getStoreUserService } from '@/services';
+const userS = getStoreUserService()
 const logoutF = () => {
   sessionStorage.clear()
   router.push('/login')
@@ -16,7 +16,7 @@ const logoutF = () => {
         :icon="Setting"
         @click="$router.push('/settings')"
         style="margin: 10px">
-        {{ user?.name }}
+        {{ userS?.name }}
       </el-button>
     </el-col>
 

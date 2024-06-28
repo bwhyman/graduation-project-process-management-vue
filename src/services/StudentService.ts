@@ -22,7 +22,7 @@ export const selectTeacher = async (tid: string) => {
 
   const student = resp.data.data?.user
   if (student) {
-    storeToRefs(userStore).userS.value = student
+    userStore.userS.value = student
     sessionStorage.setItem('user', JSON.stringify(student))
   }
 

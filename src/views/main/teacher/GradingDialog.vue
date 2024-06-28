@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { useProcessStore } from '@/stores/ProcessStore'
-import { useUserStore } from '@/stores/UserStore'
+import { getStoreUserService, listProcessesService } from '@/services'
 import type { PSDetail, ProcessScore, StudentProcessScore } from '@/types'
 
 const dialogVisible = ref(true)
@@ -12,12 +11,12 @@ interface Props {
   addProcessScore: (ps: ProcessScore) => void
 }
 const props = defineProps<Props>()
-const processStore = useProcessStore()
-const process = processStore.processesS.find((p) => p.id == props.processId)
+const processesS = await listProcessesService()
+const process = processesS.value.find((p) => p.id == props.processId)
 // 过程项
 const processItems = process?.items ?? []
-const userStore = useUserStore()
-const currentTeacherScore = props.student.psTeachers?.find((t) => t.teacherId == userStore.userS.id)
+const userS = getStoreUserService()
+const currentTeacherScore = props.student.psTeachers?.find((t) => t.teacherId == userS.value.id)
 const scoreInfoR = ref<ProcessScore>({})
 const psDetailR = ref<PSDetail>({})
 if (currentTeacherScore) {
@@ -70,10 +69,10 @@ const onInputF = (index: number) => {
 
 // ---------------------
 const submitF = () => {
-  scoreInfoR.value.teacherId = userStore.userS.id
+  scoreInfoR.value.teacherId = userS.value.id
   scoreInfoR.value.studentId = props.student.id
   scoreInfoR.value.processId = props.processId
-  psDetailR.value.teacherName = userStore.userS.name
+  psDetailR.value.teacherName = userS.value.name
   scoreInfoR.value.detail = toRaw(psDetailR.value)
   currentTeacherScore && (scoreInfoR.value.id = currentTeacherScore.processScoreId)
   props.addProcessScore(toRaw(scoreInfoR.value))

@@ -7,8 +7,8 @@ const menus = [
   }
 ]
 
-const processes = (await listProcessesService()) ?? []
-processes.forEach((ps) => {
+const processesS = await listProcessesService()
+processesS.value.forEach((ps) => {
   menus.push({ name: ps.name!, path: `/teacher/processes/${ps.id}/types/${ps.auth}` })
 })
 const route = useRoute()

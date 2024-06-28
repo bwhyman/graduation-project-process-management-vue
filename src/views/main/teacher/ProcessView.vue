@@ -7,7 +7,6 @@ import {
   listTutorStudentsService,
   listGroupStudentsService
 } from '@/services/TeacherService'
-import { useUserStore } from '@/stores/UserStore'
 import type {
   StudentProcessScore,
   PSDetail,
@@ -19,28 +18,23 @@ import type {
 } from '@/types'
 import { PA_REVIEW } from '@/services/Const'
 import GroupTeacherView from './GroupTeacherView.vue'
-import { useProcessStore } from '@/stores/ProcessStore'
-import { createElNotificationSuccess } from '@/components/message'
 import { Brush, Box } from '@element-plus/icons-vue'
+import { getStoreUserService, listProcessesService } from '@/services'
 
 // --------------------
-const props = defineProps<{ pid: string; auth: string }>()
-const processFilesR = ref<ProcessFile[]>([])
-const userStore = useUserStore()
+const params = useRoute().params as { pid: string; auth: string }
 
-let get: Function
-if (props.auth == PA_REVIEW) {
-  get = listGroupStudentsService
-} else {
-  get = listTutorStudentsService
-}
+const processFilesR = ref<ProcessFile[]>([])
+const userS = getStoreUserService()
 
 const result = await Promise.all([
-  get(),
-  listProcessScoresService(props.pid, props.auth),
-  listPorcessFilesService(props.pid, props.auth)
+  params.auth == PA_REVIEW ? listGroupStudentsService() : listTutorStudentsService(),
+  listProcessScoresService(params.pid, params.auth),
+  listPorcessFilesService(params.pid, params.auth),
+  listProcessesService()
 ])
-
+const studentsS = result[0]
+const processesS = result[3]
 //
 const levelCount = ref<LevelCount>({
   score_last: 0,
@@ -48,7 +42,7 @@ const levelCount = ref<LevelCount>({
   score_70: 0,
   score_80: 0,
   score_90: 0,
-  len: result[0].length
+  len: studentsS.value.length
 })
 const currentPStudentsR = ref<StudentProcessScore[]>([])
 
@@ -63,10 +57,10 @@ function collectPS(pses: ProcessScore[]) {
     score_70: 0,
     score_80: 0,
     score_90: 0,
-    len: result[0].length
+    len: studentsS.value.length
   }
   currentPStudentsR.value = []
-  ;(result[0] as Student[]).forEach((student) => {
+  ;(studentsS.value as Student[]).forEach((student) => {
     const stuD: StudentProcessScore = JSON.parse(JSON.stringify(student))
     currentPStudentsR.value.push(stuD)
     let temp = 0
@@ -86,7 +80,7 @@ function collectPS(pses: ProcessScore[]) {
         detail: psDetail.detail
       }
       stuD.psTeachers?.push(psTeacher)
-      if (ps.teacherId == userStore.userS.id) {
+      if (ps.teacherId == userS.value.id) {
         stuD.currentTeacherScore = psDetail.score
       }
     })
@@ -108,11 +102,10 @@ function collectPS(pses: ProcessScore[]) {
 }
 
 //
-const currentProcessAttach = useProcessStore().processesS.find((ps) => ps.id == props.pid)
-  ?.studentAttach
+const currentProcessAttach = processesS.value.find((ps) => ps.id == params.pid)?.studentAttach
 // ---------------------
 const addProcessScoreF = (ps: ProcessScore) => {
-  addPorcessScoreService(ps, props.auth).then((pses) => collectPS(pses))
+  addPorcessScoreService(ps, params.auth).then((pses) => collectPS(pses))
 }
 
 //
@@ -205,7 +198,7 @@ const closeF = () => (gradingDialogVisable.value = false)
     :student="currentStudentR!"
     :close="closeF"
     :add-process-score="addProcessScoreF"
-    :processId="props.pid" />
+    :processId="params.pid" />
 </template>
 
 <style scoped>

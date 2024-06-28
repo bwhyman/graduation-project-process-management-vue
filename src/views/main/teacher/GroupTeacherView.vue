@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { listGroupTeachersService } from '@/services/TeacherService'
-import { useInfosStore } from '@/stores/InfosStore'
-await listGroupTeachersService()
 
-const groupTeachersR = storeToRefs(useInfosStore()).groupTeachersS
+const groupTeachersR = await listGroupTeachersService()
 </script>
 <template>
   <el-row class="my-row">

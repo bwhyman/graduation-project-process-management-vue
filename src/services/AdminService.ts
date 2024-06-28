@@ -3,6 +3,8 @@ import type { Process, ProcessItem, ResultVO, Student, StudentAttach, Teacher, U
 import { useProcessStore } from '@/stores/ProcessStore'
 import { createElNotificationSuccess } from '@/components/message'
 
+const processStore = useProcessStore()
+
 //
 export const updateStartTime = async (time: string) => {
   await axios.put<ResultVO<{}>>(`admin/starttime/${time}`)
@@ -59,9 +61,9 @@ export const addProcessService = async (ps: Process) => {
     ps.studentAttach = JSON.stringify(ps.studentAttach)
   }
   const resp = await axios.post<ResultVO<{ processes: Process[] }>>('admin/processes', ps)
-  const processStore = useProcessStore()
-  const processesR = storeToRefs(processStore).processesS
-  processesR.value = resp.data.data?.processes ?? []
+
+  const processesS = processStore.processesS
+  processesS.value = resp.data.data?.processes ?? []
 }
 
 export const resetData = async () => {
@@ -82,19 +84,16 @@ export const addStudentsAll = async (students: Student[]) => {
 }
 //
 export const listProcessesService = async () => {
-  const processStore = useProcessStore()
-  let processesR = processStore.processesS
-  if (processesR.length > 0) return processesR
+  const processesS = processStore.processesS
+  if (processesS.value.length > 0) return processesS
   const resp = await axios.get<ResultVO<{ processes: Process[] }>>('admin/processes')
-  processesR = resp.data.data?.processes ?? []
-  processStore.processesS = processesR
-  return processesR
+  processesS.value = resp.data.data?.processes ?? []
+  return processesS
 }
 //
 export const delProcessService = async (pid: string) => {
   const resp = await axios.delete<ResultVO<{ processes: Process[] }>>(`admin/processes/${pid}`)
-  const processStore = useProcessStore()
-  processStore.processesS = resp.data.data?.processes ?? []
+  processStore.processesS.value = resp.data.data?.processes ?? []
   return true
 }
 
@@ -105,8 +104,7 @@ export const updateProcessService = async (process: Process) => {
   // @ts-ignore
   process.studentAttach = JSON.stringify(process.studentAttach)
   const resp = await axios.patch<ResultVO<{ processes: Process[] }>>('admin/processes', process)
-  const processStore = useProcessStore()
-  processStore.processesS = resp.data.data?.processes ?? []
+  processStore.processesS.value = resp.data.data?.processes ?? []
 }
 
 //
