@@ -1,8 +1,7 @@
 import type { Process, StudentAttach } from '@/types'
 
+const processesS = ref<Process[]>([])
+const studentProcessesS = ref<StudentAttach[]>([])
 export const useProcessStore = () => {
-  const processesS = ref<Process[]>([])
-  const studentProcessesS = ref<StudentAttach[]>([])
-
   return { processesS, studentProcessesS }
 }
