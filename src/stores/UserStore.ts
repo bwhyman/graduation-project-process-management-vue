@@ -34,6 +34,7 @@ const setUserSessionStorage = (user: User, role: string) => {
   sessionStorage.setItem('role', role)
   sessionStorage.setItem('user', encode(JSON.stringify(user)))
 }
+const store = { userS, setUserSessionStorage }
 export const useUserStore = () => {
-  return { userS, setUserSessionStorage }
+  return store
 }

@@ -4,6 +4,7 @@ import type { Student, Teacher } from '@/types'
 const groupStudentsS = ref<Student[]>([])
 const groupTeachersS = ref<Teacher[]>([])
 const tutortudentsS = ref<Student[]>([])
+const store = { groupStudentsS, groupTeachersS, tutortudentsS }
 export const useInfosStore = () => {
-  return { groupStudentsS, groupTeachersS, tutortudentsS }
+  return store
 }
