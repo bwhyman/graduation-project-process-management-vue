@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { SwitchButton, Setting } from '@element-plus/icons-vue'
 import router from '@/router'
-import { getStoreUserService } from '@/services';
+import { getStoreUserService } from '@/services'
 const userS = getStoreUserService()
 const logoutF = () => {
   sessionStorage.clear()

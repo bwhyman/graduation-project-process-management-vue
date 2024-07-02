@@ -11,15 +11,14 @@ const processStore = useProcessStore()
 export const loginService = async (user: User) => {
   try {
     const resp = await axios.post<ResultVO<{ user: User }>>('login', user)
-
     const us = resp.data.data?.user
     const token = resp.headers.token
     const role = resp.headers.role
-
-    sessionStorage.setItem('role', role)
+    if (!us || !token || !role) {
+      throw '登录错误'
+    }
     sessionStorage.setItem('token', token)
-    sessionStorage.setItem('user', JSON.stringify(us))
-
+    userStore.setUserSessionStorage(us, role)
     if (user.number == user.password) {
       router.push('/settings')
       return
