@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { listProcessesService } from '@/services'
-import { getProcessScoresService, getStudentsService } from '@/services/TeacherService'
+import { CommonService } from '@/services'
+import { TeacherService } from '@/services/TeacherService'
 
 const exportScores = async () => {
   const result = await Promise.all([
-    getStudentsService(),
-    getProcessScoresService(),
-    listProcessesService()
+    TeacherService.getStudentsService(),
+    TeacherService.getAllProcessScoresService(),
+    CommonService.listProcessesService()
   ])
 
   const students = result[0]
@@ -14,7 +14,7 @@ const exportScores = async () => {
   const processesS = result[2]
 
   import('@/services/ExcelUtils').then(({ exportScoreExcelFile }) =>
-    exportScoreExcelFile(processesS.value, processScores ?? [], students)
+    exportScoreExcelFile(processesS.value, processScores.value, students.value)
   )
 }
 </script>

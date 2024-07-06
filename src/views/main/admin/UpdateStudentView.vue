@@ -3,6 +3,7 @@ import { Check } from '@element-plus/icons-vue'
 import type { Student } from '@/types'
 import { readStudents2 } from '@/services/ExcelUtils'
 import { addStudentsAll } from '@/services/AdminService'
+import { createElNotificationSuccess } from '@/components/message'
 
 const students = ref<Student[]>([])
 // read student excel
@@ -17,8 +18,9 @@ const readStu = (event: Event) => {
   })
 }
 
-const submitStudents = () => {
-  addStudentsAll(students.value)
+const submitStudents = async () => {
+  await addStudentsAll(students.value)
+  createElNotificationSuccess('更新学生成功')
   students.value = []
 }
 </script>

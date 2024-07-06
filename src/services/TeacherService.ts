@@ -1,130 +1,138 @@
 import axios from '@/axios'
-import type { ProcessFile, ProcessScore, Progress, ResultVO, User } from '@/types'
+import type { ProcessFile, ProcessScore, Progress, ResultVO, Student, Teacher, User } from '@/types'
 import { useInfosStore } from '@/stores/InfosStore'
 import { createProgressNotification } from '@/components/progress'
+import { StoreCache, StoreClear } from './descriptor'
+import { useProcessInfosStore } from '@/stores/ProcessInfosStore'
+import { useUsersStore } from '@/stores/UsersStore'
 
 const infosStore = useInfosStore()
-// 获取指导学生
-export const listTutorStudentsService = async () => {
-  const tutortudentsS = infosStore.tutortudentsS
-  if (tutortudentsS.value.length > 0) return tutortudentsS
-  const resp = await axios.get<ResultVO<{ students: User[] }>>('teacher/students/tutor')
-  tutortudentsS.value = resp.data.data?.students ?? []
-  return tutortudentsS
-}
+const processInfosStore = useProcessInfosStore()
+const usersStore = useUsersStore()
 
-//
-export const listGroupStudentsService = async () => {
-  const groupStudentsS = infosStore.groupStudentsS
-  if (groupStudentsS.value.length > 0) return groupStudentsS
-  const resp = await axios.get<ResultVO<{ students: User[] }>>('teacher/students/group')
-  groupStudentsS.value = resp.data.data?.students ?? []
-  return groupStudentsS
-}
+export class TeacherService {
+  // 获取指导学生
+  @StoreCache(infosStore.tutortudentsS)
+  static async listTutorStudentsService() {
+    const resp = await axios.get<ResultVO<{ students: User[] }>>('teacher/students/tutor')
+    return resp.data.data?.students as unknown as Ref<Student[]>
+  }
 
-//
-export const listGroupTeachersService = async () => {
-  const groupTeachersS = infosStore.groupTeachersS
-  if (groupTeachersS.value.length > 0) return groupTeachersS
-  const resp = await axios.get<ResultVO<{ teachers: User[] }>>('teacher/teachers/group')
-  groupTeachersS.value = resp.data.data?.teachers ?? []
-  return groupTeachersS
-}
+  //
+  @StoreCache(infosStore.groupStudentsS)
+  static async listGroupStudentsService() {
+    const resp = await axios.get<ResultVO<{ students: User[] }>>('teacher/students/group')
+    return resp.data.data?.students as unknown as Ref<Student[]>
+  }
 
-// 加载指定过程评分
-export const listProcessScoresService = async (pid: string, auth: string) => {
-  const resp = await axios.get<ResultVO<{ processScores: ProcessScore[] }>>(
-    `teacher/processes/${pid}/types/${auth}`
-  )
-  return resp.data.data?.processScores ?? []
-}
+  //
+  @StoreCache(infosStore.groupTeachersS)
+  static async listGroupTeachersService() {
+    const resp = await axios.get<ResultVO<{ teachers: User[] }>>('teacher/teachers/group')
+    return resp.data.data?.teachers as unknown as Ref<Teacher[]>
+  }
 
-// 添加评分
-export const addPorcessScoreService = async (ps: ProcessScore, auth: string) => {
-  // @ts-ignore
-  ps.detail = JSON.stringify(ps.detail)
-  const resp = await axios.post<ResultVO<{ processScores: ProcessScore[] }>>(
-    `teacher/processscores/types/${auth}`,
-    ps
-  )
-  return resp.data.data?.processScores ?? []
-}
+  // 加载指定过程评分
+  @StoreCache(processInfosStore.processScoresS)
+  static async listProcessesProcessScoresService(pid: string, auth: string) {
+    const resp = await axios.get<ResultVO<{ processScores: ProcessScore[] }>>(
+      `teacher/processes/${pid}/types/${auth}`
+    )
+    return resp.data.data?.processScores as unknown as Ref<ProcessScore[]>
+  }
 
-//
-export const listPorcessFilesService = async (pid: string, auth: string) => {
-  const resp = await axios.get<ResultVO<{ processFiles: ProcessFile[] }>>(
-    `teacher/processfiles/${pid}/types/${auth}`
-  )
-  return resp.data.data?.processFiles ?? []
-}
+  // 添加评分
+  @StoreClear(processInfosStore.clear)
+  @StoreCache(processInfosStore.processScoresS)
+  static async addPorcessScoreService(ps: ProcessScore, auth: string) {
+    // @ts-ignore
+    ps.detail = JSON.stringify(ps.detail)
+    const resp = await axios.post<ResultVO<{ processScores: ProcessScore[] }>>(
+      `teacher/processscores/types/${auth}`,
+      ps
+    )
+    return resp.data.data?.processScores as unknown as Ref<ProcessScore[]>
+  }
 
-// 获取未选择导师学生列表
-export const getUnselectedStudentsService = async () => {
-  const resp = await axios.get<ResultVO<{ students: User[] }>>('teacher/unselected')
-  const students = resp.data.data?.students ?? []
-  return students
-}
+  //
+  @StoreCache(processInfosStore.porcessFilesS)
+  static async listPorcessFilesService(pid: string, auth: string) {
+    const resp = await axios.get<ResultVO<{ processFiles: ProcessFile[] }>>(
+      `teacher/processfiles/${pid}/types/${auth}`
+    )
+    return resp.data.data?.processFiles as unknown as Ref<ProcessFile[]>
+  }
 
-// 获取全部学生。用于生成表格
-export const getStudentsService = async () => {
-  const resp = await axios.get<ResultVO<{ students: User[] }>>('teacher/students')
-  const students = resp.data.data?.students ?? []
-  return students
-}
-// 获取全部教师
-export const getTeachersService = async () => {
-  const resp = await axios.get<ResultVO<{ teachers: User[] }>>('teacher/teachers')
-  const teachers = resp.data.data?.teachers
-  return teachers
-}
+  // 获取未选择导师学生列表
+  static getUnselectedStudentsService = async () => {
+    const resp = await axios.get<ResultVO<{ students: User[] }>>('teacher/unselected')
+    const students = resp.data.data?.students ?? []
+    return students
+  }
 
-// 获取全部评分
-export const getProcessScoresService = async () => {
-  const resp = await axios.get<ResultVO<{ processScores: ProcessScore[] }>>('teacher/processscores')
-  const ps = resp.data.data?.processScores
-  return ps
-}
+  // 获取全部学生。用于生成表格
+  @StoreCache(usersStore.allStudentsS)
+  static async getStudentsService() {
+    const resp = await axios.get<ResultVO<{ students: User[] }>>('teacher/students')
+    return resp.data.data?.students as unknown as Ref<User[]>
+  }
+  // 获取全部教师
+  @StoreCache(usersStore.allTeachersS)
+  static async getTeachersService() {
+    const resp = await axios.get<ResultVO<{ teachers: User[] }>>('teacher/teachers')
+    return resp.data.data?.teachers as unknown as Ref<User[]>
+  }
 
-//
-export const getProcessFileService = async (name: string) => {
-  const pname = encodeURIComponent(name)
-  const progressR = ref<{ progress: Progress }>({
-    progress: { percentage: 0, title: name, rate: 0, total: 0, loaded: 0 }
-  })
-  const progNotif = createProgressNotification(progressR.value)
-  const resp = await axios.get(`teacher/download/${pname}`, {
-    responseType: 'blob',
-    onDownloadProgress(ProgressEvent) {
-      if (!ProgressEvent) return
-      progressR.value.progress.percentage = ProgressEvent.progress ?? 0
-      progressR.value.progress.rate = ProgressEvent.rate ?? 0
-      progressR.value.progress.loaded = ProgressEvent.loaded ?? 0
-      progressR.value.progress.total = ProgressEvent.total ?? 0
-    }
-  })
-  progNotif.close()
-  const filename = decodeURIComponent(resp.headers['filename'])
-  const url = window.URL.createObjectURL(new Blob([resp.data]))
-  const link = document.createElement('a')
-  link.href = url
-  link.setAttribute('download', filename)
-  document.body.appendChild(link)
-  link.click()
+  // 获取全部学生评分
+  @StoreCache(processInfosStore.allProcessScoresS)
+  static async getAllProcessScoresService() {
+    const resp =
+      await axios.get<ResultVO<{ processScores: ProcessScore[] }>>('teacher/processscores')
+    return resp.data.data?.processScores as unknown as Ref<ProcessScore[]>
+  }
 
-  window.URL.revokeObjectURL(url)
-  document.body.removeChild(link)
-}
+  //
+  static getProcessFileService = async (name: string) => {
+    const pname = encodeURIComponent(name)
+    const progressR = ref<{ progress: Progress }>({
+      progress: { percentage: 0, title: name, rate: 0, total: 0, loaded: 0 }
+    })
+    const progNotif = createProgressNotification(progressR.value)
+    const resp = await axios.get(`teacher/download/${pname}`, {
+      responseType: 'blob',
+      onDownloadProgress(ProgressEvent) {
+        if (!ProgressEvent) return
+        progressR.value.progress.percentage = ProgressEvent.progress ?? 0
+        progressR.value.progress.rate = ProgressEvent.rate ?? 0
+        progressR.value.progress.loaded = ProgressEvent.loaded ?? 0
+        progressR.value.progress.total = ProgressEvent.total ?? 0
+      }
+    })
+    progNotif.close()
+    const filename = decodeURIComponent(resp.headers['filename'])
+    const url = window.URL.createObjectURL(new Blob([resp.data]))
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', filename)
+    document.body.appendChild(link)
+    link.click()
 
-//
-export const listProcessScoresGroupService = async () => {
-  const resp = await axios.get<ResultVO<{ processScores: ProcessScore[] }>>(
-    'teacher/processscores/groups'
-  )
-  return resp.data.data?.processScores ?? []
-}
+    window.URL.revokeObjectURL(url)
+    document.body.removeChild(link)
+  }
 
-//
-export const updatePassword = async (number: string) => {
-  const resp = await axios.put<ResultVO<{ number: number }>>(`teacher/passwords/${number}`)
-  return resp.data.data?.number
+  // 加载小组全部评分
+  @StoreCache(processInfosStore.groupProcessScoresS)
+  static async listProcessScoresGroupService() {
+    const resp = await axios.get<ResultVO<{ processScores: ProcessScore[] }>>(
+      'teacher/processscores/groups'
+    )
+    return resp.data.data?.processScores as unknown as Ref<ProcessScore[]>
+  }
+
+  //
+  static resetPasswordService = async (number: string) => {
+    const resp = await axios.put<ResultVO<{ number: number }>>(`teacher/passwords/${number}`)
+    return resp.data.data?.number
+  }
 }

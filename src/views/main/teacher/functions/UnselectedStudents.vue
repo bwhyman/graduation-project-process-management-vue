@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { getUnselectedStudentsService } from '@/services/TeacherService'
+import { TeacherService } from '@/services/TeacherService'
 import type { User } from '@/types'
 
 const studentsR = ref<User[]>([])
 const showUnSelectedR = ref(false)
 const getStu = async () => {
-  studentsR.value = await getUnselectedStudentsService()
+  studentsR.value = await TeacherService.getUnselectedStudentsService()
   showUnSelectedR.value = true
 }
 </script>

@@ -3,6 +3,7 @@ import { Check } from '@element-plus/icons-vue'
 import type { User } from '@/types'
 import { readTeacherFile } from '@/services/ExcelUtils'
 import { addTeachers } from '@/services/AdminService'
+import { createElNotificationSuccess } from '@/components/message'
 
 const teachers = ref<User[]>([])
 // read teacher excel
@@ -16,9 +17,10 @@ const readTeacher = (event: Event) => {
   })
 }
 
-const submitTeachers = () => {
-  addTeachers(teachers.value)
+const submitTeachers = async () => {
+  await addTeachers(teachers.value)
   teachers.value = []
+  createElNotificationSuccess('导师添加成功')
 }
 </script>
 <template>

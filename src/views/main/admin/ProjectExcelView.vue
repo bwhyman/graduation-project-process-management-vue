@@ -3,6 +3,7 @@ import { Check } from '@element-plus/icons-vue'
 import type { User } from '@/types'
 import { readProjectTitles } from '@/services/ExcelUtils'
 import { addProjectTitles } from '@/services/AdminService'
+import { createElNotificationSuccess } from '@/components/message'
 
 const projects = ref<User[]>([])
 const readProjects = (event: Event) => {
@@ -15,8 +16,9 @@ const readProjects = (event: Event) => {
   })
 }
 
-const add = () => {
-  addProjectTitles(projects.value)
+const add = async () => {
+  await addProjectTitles(projects.value)
+  createElNotificationSuccess('题目导入成功')
 }
 </script>
 <template>

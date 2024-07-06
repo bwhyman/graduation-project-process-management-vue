@@ -1,15 +1,14 @@
 <script lang="ts" setup>
 import type { User } from '@/types'
 import { Lock, User as UserIco, SwitchButton } from '@element-plus/icons-vue'
-import { loginService } from '@/services'
+import { CommonService } from '@/services'
 
 let user = ref<User>({})
 
 let login = () => {
   let number = user.value.number
   let password = user.value.password
-
-  loginService({
+  CommonService.loginService({
     number: number,
     password: password
   })

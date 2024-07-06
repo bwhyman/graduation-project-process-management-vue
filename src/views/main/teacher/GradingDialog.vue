@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { getStoreUserService, listProcessesService } from '@/services'
+import { CommonService } from '@/services'
 import type { PSDetail, ProcessScore, StudentProcessScore } from '@/types'
 
 const dialogVisible = ref(true)
@@ -11,12 +11,12 @@ interface Props {
   addProcessScore: (ps: ProcessScore) => void
 }
 const props = defineProps<Props>()
-const processesS = await listProcessesService()
+const processesS = await CommonService.listProcessesService()
 const process = processesS.value.find((p) => p.id == props.processId)
 // 过程项
 const processItems = process?.items ?? []
-const userS = getStoreUserService()
-const currentTeacherScore = props.student.psTeachers?.find((t) => t.teacherId == userS.value.id)
+const userS = CommonService.getStoreUserService()
+const currentTeacherScore = props.student.psTeachers?.find((t) => t.teacherId == userS.value!.id)
 const scoreInfoR = ref<ProcessScore>({})
 const psDetailR = ref<PSDetail>({})
 if (currentTeacherScore) {
@@ -69,6 +69,7 @@ const onInputF = (index: number) => {
 
 // ---------------------
 const submitF = () => {
+  if (!userS.value) return
   scoreInfoR.value.teacherId = userS.value.id
   scoreInfoR.value.studentId = props.student.id
   scoreInfoR.value.processId = props.processId

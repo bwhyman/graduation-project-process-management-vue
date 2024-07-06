@@ -2,6 +2,10 @@
 
 ### Update
 
+#### 2024.07.06
+
+引入Descriptor解耦store缓存。
+
 #### 2024.06.29
 
 自定义store，移除pinia。

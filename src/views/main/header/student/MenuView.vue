@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { listProcessesService } from '@/services'
+import { CommonService } from '@/services'
 
 const menus = [
   {
@@ -7,7 +7,7 @@ const menus = [
     path: '/student'
   }
 ]
-const processesS = await listProcessesService()
+const processesS = await CommonService.listProcessesService()
 
 processesS.value.forEach((pr) => {
   menus.push({ name: pr.name!, path: `/student/processes/${pr.id}` })

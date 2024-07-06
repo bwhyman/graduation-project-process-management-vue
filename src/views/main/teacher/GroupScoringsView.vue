@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { listProcessesService } from '@/services'
-import { listGroupStudentsService, listProcessScoresGroupService } from '@/services/TeacherService'
+import { CommonService } from '@/services'
+import { TeacherService } from '@/services/TeacherService'
 import type { User, Process, LevelCount } from '@/types'
 
 interface StudentScore {
@@ -10,9 +10,9 @@ interface StudentScore {
 }
 
 const result = await Promise.all([
-  listProcessesService(),
-  listProcessScoresGroupService(),
-  listGroupStudentsService()
+  CommonService.listProcessesService(),
+  TeacherService.listProcessScoresGroupService(),
+  TeacherService.listGroupStudentsService()
 ])
 const processes = result[0]
 const processScores = result[1]
@@ -35,7 +35,7 @@ students.value.forEach((stu) => {
   // 获取当前学生当前过程的全部评分
   let currentProcessScore = 0
   processes.value.forEach((p) => {
-    const stuProcessAllScores = processScores.filter(
+    const stuProcessAllScores = processScores.value.filter(
       (ps) => ps.processId == p.id && ps.studentId == stu.id
     )
     let pScore = 0

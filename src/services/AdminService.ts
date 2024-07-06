@@ -8,7 +8,6 @@ const processStore = useProcessStore()
 //
 export const updateStartTime = async (time: string) => {
   await axios.put<ResultVO<{}>>(`admin/starttime/${time}`)
-  createElNotificationSuccess('修改时间成功')
 }
 
 //
@@ -18,7 +17,6 @@ export const addStudents = async (students: User[]) => {
     stu.student = JSON.stringify(stu.student)
   })
   await axios.post('admin/students', students)
-  createElNotificationSuccess('学生添加成功')
 }
 
 export const addTeachers = async (teachers: Teacher[]) => {
@@ -27,19 +25,16 @@ export const addTeachers = async (teachers: Teacher[]) => {
     t.teacher = JSON.stringify(t.teacher)
   })
   await axios.post('admin/teachers', teachers)
-  createElNotificationSuccess('导师添加成功')
 }
 
 //
 export const addProjectTitles = async (titles: Student[]) => {
   await axios.post<ResultVO<{}>>('admin/students/projects', titles)
-  createElNotificationSuccess('题目导入成功')
 }
 
 //
 export const updateGroupAndQueue = async (students: Student[]) => {
   await axios.post('admin/grouping', students)
-  createElNotificationSuccess('更新学生分组成功')
 }
 
 //
@@ -80,7 +75,6 @@ export const listTeachersService = async () => {
 //
 export const addStudentsAll = async (students: Student[]) => {
   await axios.post('admin/students/all', students)
-  createElNotificationSuccess('更新学生成功')
 }
 //
 export const listProcessesService = async () => {

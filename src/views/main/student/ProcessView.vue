@@ -8,7 +8,7 @@ import {
 } from '@/services/StudentService'
 import { createElNotificationSuccess, createMessageDialog } from '@/components/message'
 import { GoldMedal, WarningFilled } from '@element-plus/icons-vue'
-import { getStoreUserService, listProcessesService } from '@/services'
+import { CommonService } from '@/services'
 const route = useRoute()
 let params = route.params as { pid: string }
 
@@ -19,7 +19,7 @@ const showCheckedC = computed(
   () => (attach: StudentAttach) => processFilesR.value.find((pf) => pf.number == attach.number)
 )
 
-const processesS = await listProcessesService()
+const processesS = await CommonService.listProcessesService()
 const studentPR = ref<Process>()
 watch(
   route,
@@ -30,7 +30,7 @@ watch(
   { immediate: true }
 )
 const selectAttachR = ref<StudentAttach>()
-const userS = getStoreUserService()
+const userS = CommonService.getStoreUserService()
 
 const fileInputR = ref<HTMLInputElement>()
 const visableSubmitR = ref(false)
@@ -64,7 +64,7 @@ const uploadF = async () => {
     createMessageDialog(`请转为${selectAttachR.value?.ext}版上传`)
     return
   }
-
+  if (!userS.value) return
   const fileName = `${userS.value.student?.queueNumber}-${userS.value.name}-${userS.value.number}-${selectAttachR.value?.name}${ext}`
   if (fileName.includes('/') || fileName.includes('\\')) {
     createMessageDialog(`文件错误`)

@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { createElNotificationSuccess } from '@/components/message'
 import { resetData } from '@/services/AdminService'
 
 const visible = ref(false)
 
-const resetF = () => {
-  resetData()
+const resetF = async () => {
+  await resetData()
+  createElNotificationSuccess('数据重置成功')
   visible.value = false
 }
 </script>

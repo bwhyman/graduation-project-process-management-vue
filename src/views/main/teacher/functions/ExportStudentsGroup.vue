@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { getStudentsService, getTeachersService } from '@/services/TeacherService'
+import { TeacherService } from '@/services/TeacherService'
 import type { Student, User } from '@/types'
 
 const exportGroup = async () => {
-  const students = await getStudentsService()
-  const teachers = await getTeachersService()
+  const students = await TeacherService.getStudentsService()
+  const teachers = await TeacherService.getTeachersService()
   const map = new Map<number, { students: Student[]; teachers: User[] }>()
-  students?.forEach((stu) => {
+  students.value.forEach((stu) => {
     if (!stu.groupNumber) return
     let mapValue = stu.groupNumber && map.get(stu.groupNumber)
     if (!mapValue) {
@@ -16,7 +16,7 @@ const exportGroup = async () => {
     mapValue.students.push(stu)
   })
 
-  teachers?.forEach((ts) => {
+  teachers.value.forEach((ts) => {
     if (!ts.groupNumber) return
     let mapValue = ts.groupNumber && map.get(ts.groupNumber)
     if (!mapValue) {

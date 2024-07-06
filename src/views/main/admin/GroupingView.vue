@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createElNotificationSuccess } from '@/components/message'
 import { getGroupInfo, updateGroupAndQueue } from '@/services/AdminService'
 import type { Student, Teacher, User } from '@/types'
 import { Check } from '@element-plus/icons-vue'
@@ -134,7 +135,7 @@ const grouping = () => {
 }
 
 // -----------
-const updateGroup = () => {
+const updateGroup = async () => {
   const stus: { number: string; groupNumber: number; queueNumber: number }[] = []
   newStuGroupMap.forEach((value, key) => {
     for (let i = 0; i < value.students.length!; i++) {
@@ -145,7 +146,8 @@ const updateGroup = () => {
       })
     }
   })
-  updateGroupAndQueue(stus)
+  await updateGroupAndQueue(stus)
+  createElNotificationSuccess('更新学生分组成功')
 }
 </script>
 <template>

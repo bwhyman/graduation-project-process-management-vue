@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { getStudentsService } from '@/services/TeacherService'
+import { TeacherService } from '@/services/TeacherService'
 
 const exportStudents = () => {
-  getStudentsService().then((res) => {
+  TeacherService.getStudentsService().then((res) => {
     if (!res) return
     let i = 0
-    let result = res.map((s) => {
+    let result = res.value.map((s) => {
       return {
         序号: (i += 1),
         学号: s.number,

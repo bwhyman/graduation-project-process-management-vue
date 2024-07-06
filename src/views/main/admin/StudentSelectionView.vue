@@ -3,6 +3,7 @@ import { addStudents, listTeachersService } from '@/services/AdminService'
 import { readStudentForSelectionFile } from '@/services/ExcelUtils'
 import type { User } from '@/types'
 import GroupingView from './GroupingView.vue'
+import { createElNotificationSuccess } from '@/components/message'
 
 interface TeacherTemp {
   id?: string
@@ -131,9 +132,10 @@ const readStu = async (event: Event) => {
 }
 
 // ----------------
-const submitF = () => {
+const submitF = async () => {
   studentsT.sort((x, y) => Number(x.number) - Number(y.number))
-  addStudents(studentsT)
+  await addStudents(studentsT)
+  createElNotificationSuccess('学生添加成功')
 }
 </script>
 <template>

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { Lock } from '@element-plus/icons-vue'
-import { updateSelfPassword } from '@/services'
+import { CommonService } from '@/services'
 import { createElNotificationSuccess, createMessageDialog } from '@/components/message'
 
 const pwdM = ref({ p1: '', p2: '' })
@@ -9,7 +9,7 @@ const resetPwd = async () => {
     createMessageDialog('2次输入密码不同')
     return
   }
-  await updateSelfPassword(pwdM.value.p1)
+  await CommonService.updateSelfPassword(pwdM.value.p1)
   createElNotificationSuccess('密码更新成功')
   pwdM.value.p2 = pwdM.value.p1 = ''
 }

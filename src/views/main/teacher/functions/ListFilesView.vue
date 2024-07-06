@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import router from '@/router'
-import { listProcessesService } from '@/services'
-import {
-  getProcessFileService,
-  listGroupStudentsService,
-  listPorcessFilesService
-} from '@/services/TeacherService'
-import type { ProcessFile, Student, StudentAttach } from '@/types'
+import { CommonService } from '@/services'
+import { TeacherService } from '@/services/TeacherService'
+import type { ProcessFile, StudentAttach } from '@/types'
 import { Brush, Box } from '@element-plus/icons-vue'
 
 const route = useRoute()
-const result = await Promise.all([listProcessesService(), listGroupStudentsService()])
+const result = await Promise.all([
+  CommonService.listProcessesService(),
+  TeacherService.listGroupStudentsService()
+])
 
 const studentsR = result[1]
 const processFilesR = ref<ProcessFile[]>([])
@@ -30,7 +29,9 @@ watch(
     const selectProcess = processesS.find((p) => p.id == route.params?.pid)
     if (!selectProcess) return
     studentAttachsR.value = selectProcess.studentAttach!
-    processFilesR.value = await listPorcessFilesService(selectProcess?.id!, selectProcess?.auth!)
+    processFilesR.value = (
+      await TeacherService.listPorcessFilesService(selectProcess?.id!, selectProcess?.auth!)
+    ).value
   },
   { immediate: true }
 )
@@ -43,7 +44,7 @@ const processFileC = computed(
 
 const clickAttachF = async (sid: string, number: number) => {
   const pname = processFilesR.value.find((pf) => pf.studentId == sid && pf.number == number)?.detail
-  pname && (await getProcessFileService(pname))
+  pname && (await TeacherService.getProcessFileService(pname))
 }
 </script>
 <template>

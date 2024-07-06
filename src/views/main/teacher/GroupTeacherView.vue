@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { listGroupTeachersService } from '@/services/TeacherService'
+import { TeacherService } from '@/services/TeacherService'
 
-const groupTeachersR = await listGroupTeachersService()
+const groupTeachersR = await TeacherService.listGroupTeachersService()
 </script>
 <template>
   <el-row class="my-row">

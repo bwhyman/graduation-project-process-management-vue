@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { listTutorStudentsService } from '@/services/TeacherService'
+import { TeacherService } from '@/services/TeacherService'
 import type { User } from '@/types'
 // 加载指导学生
-const studentsR = await listTutorStudentsService()
+const studentsR = await TeacherService.listTutorStudentsService()
 </script>
 <template>
   <el-row class="my-row">

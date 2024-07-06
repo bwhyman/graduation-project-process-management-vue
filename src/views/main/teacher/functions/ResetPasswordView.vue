@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Check } from '@element-plus/icons-vue'
-import { updatePassword } from '@/services/TeacherService'
+import { TeacherService } from '@/services/TeacherService'
 import { createElNotificationSuccess, createMessageDialog } from '@/components/message'
 
 // reset password
@@ -11,7 +11,7 @@ let resetpassword = async () => {
     createMessageDialog('重置账号为空')
     return
   }
-  const num = await updatePassword(account)
+  const num = await TeacherService.resetPasswordService(account)
   if (num == 1) {
     createElNotificationSuccess('密码重置成功')
     numberR.value = undefined

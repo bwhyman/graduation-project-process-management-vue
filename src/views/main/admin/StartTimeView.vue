@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { Check } from '@element-plus/icons-vue'
 import { updateStartTime } from '@/services/AdminService'
+import { createElNotificationSuccess } from '@/components/message'
 // update starttime
 const startTime = ref<string>()
 const addStartTime = () => {
   startTime.value && updateStartTime(startTime.value)
   startTime.value = ''
+  createElNotificationSuccess('修改时间成功')
 }
 </script>
 <template>

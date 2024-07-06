@@ -1,12 +1,5 @@
 <script setup lang="ts">
-import {
-  addPorcessScoreService,
-  listPorcessFilesService,
-  getProcessFileService,
-  listProcessScoresService,
-  listTutorStudentsService,
-  listGroupStudentsService
-} from '@/services/TeacherService'
+import { TeacherService } from '@/services/TeacherService'
 import type {
   StudentProcessScore,
   PSDetail,
@@ -19,19 +12,21 @@ import type {
 import { PA_REVIEW } from '@/services/Const'
 import GroupTeacherView from './GroupTeacherView.vue'
 import { Brush, Box } from '@element-plus/icons-vue'
-import { getStoreUserService, listProcessesService } from '@/services'
+import { CommonService } from '@/services'
 
 // --------------------
 const params = useRoute().params as { pid: string; auth: string }
 
 const processFilesR = ref<ProcessFile[]>([])
-const userS = getStoreUserService()
+const userS = CommonService.getStoreUserService()
 
 const result = await Promise.all([
-  params.auth == PA_REVIEW ? listGroupStudentsService() : listTutorStudentsService(),
-  listProcessScoresService(params.pid, params.auth),
-  listPorcessFilesService(params.pid, params.auth),
-  listProcessesService()
+  params.auth == PA_REVIEW
+    ? TeacherService.listGroupStudentsService()
+    : TeacherService.listTutorStudentsService(),
+  TeacherService.listProcessesProcessScoresService(params.pid, params.auth),
+  TeacherService.listPorcessFilesService(params.pid, params.auth),
+  CommonService.listProcessesService()
 ])
 const studentsS = result[0]
 const processesS = result[3]
@@ -46,8 +41,8 @@ const levelCount = ref<LevelCount>({
 })
 const currentPStudentsR = ref<StudentProcessScore[]>([])
 
-collectPS(result[1])
-processFilesR.value = result[2]
+collectPS(result[1].value)
+processFilesR.value = result[2].value
 
 // 聚合评分数据
 function collectPS(pses: ProcessScore[]) {
@@ -80,6 +75,7 @@ function collectPS(pses: ProcessScore[]) {
         detail: psDetail.detail
       }
       stuD.psTeachers?.push(psTeacher)
+      if (!userS.value) return
       if (ps.teacherId == userS.value.id) {
         stuD.currentTeacherScore = psDetail.score
       }
@@ -105,7 +101,7 @@ function collectPS(pses: ProcessScore[]) {
 const currentProcessAttach = processesS.value.find((ps) => ps.id == params.pid)?.studentAttach
 // ---------------------
 const addProcessScoreF = (ps: ProcessScore) => {
-  addPorcessScoreService(ps, params.auth).then((pses) => collectPS(pses))
+  TeacherService.addPorcessScoreService(ps, params.auth).then((pses) => collectPS(pses.value))
 }
 
 //
@@ -116,7 +112,7 @@ const processFileC = computed(
 
 const clickAttachF = async (sid: string, number: number) => {
   const pname = processFilesR.value.find((pf) => pf.studentId == sid && pf.number == number)?.detail
-  pname && (await getProcessFileService(pname))
+  pname && (await TeacherService.getProcessFileService(pname))
 }
 // --------------------
 // 评分
