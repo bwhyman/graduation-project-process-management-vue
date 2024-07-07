@@ -2,7 +2,7 @@ import axios from '@/axios'
 import type { ProcessFile, ProcessScore, Progress, ResultVO, Student, Teacher, User } from '@/types'
 import { useInfosStore } from '@/stores/InfosStore'
 import { createProgressNotification } from '@/components/progress'
-import { StoreCache, StoreClear } from './descriptor'
+import { StoreCache } from './Decorators'
 import { useProcessInfosStore } from '@/stores/ProcessInfosStore'
 import { useUsersStore } from '@/stores/UsersStore'
 
@@ -42,8 +42,7 @@ export class TeacherService {
   }
 
   // 添加评分
-  @StoreClear(processInfosStore.clear)
-  @StoreCache(processInfosStore.processScoresS)
+  @StoreCache(processInfosStore.processScoresS, true)
   static async addPorcessScoreService(ps: ProcessScore, auth: string) {
     // @ts-ignore
     ps.detail = JSON.stringify(ps.detail)

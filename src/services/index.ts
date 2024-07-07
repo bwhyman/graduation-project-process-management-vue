@@ -4,7 +4,7 @@ import router from '@/router'
 import { STUDENT, ADMIN, TEACHER } from '@/services/Const'
 import { useProcessStore } from '@/stores/ProcessStore'
 import { useUserStore } from '@/stores/UserStore'
-import { StoreCache } from './descriptor'
+import { StoreCache } from './Decorators'
 
 const userStore = useUserStore()
 const processStore = useProcessStore()
