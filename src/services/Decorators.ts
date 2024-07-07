@@ -17,10 +17,8 @@ export function StoreCache<T>(dataR: Ref<T>, replace = false) {
         ((Object.prototype.toString.call(val) === '[object Array]' && (val as []).length > 0) ||
           Object.prototype.toString.call(val) === '[object Object]')
       ) {
-        console.log('call from store')
         return Promise.resolve(dataR)
       }
-      console.log('call from method')
       // 异步执行目标方法并将结果置于store
       return (originalMethod.apply(descriptor, args) as Promise<T>).then(
         (r) => (dataR.value = r) && dataR
@@ -30,7 +28,6 @@ export function StoreCache<T>(dataR: Ref<T>, replace = false) {
   }
 }
 
-// p0，Map响应式对象；p1，方法拼接key的参数索引位置
 /**
  *
  * @param dataR 封装Map类型的响应式对象
@@ -54,10 +51,8 @@ export function StoreMapCache<T>(dataR: Ref<Map<any, any>>, indexs?: number[]) {
       const mapValue = val.get(mapKey)
       // 响应式对象存在，直接返回
       if (Object.prototype.toString.call(val) === '[object Map]' && mapValue) {
-        console.log('call store')
         return Promise.resolve(mapValue)
       }
-      console.log('call method')
       // 响应式对象不存在。异步执行目标方法并将结果置于store
       return (originalMethod.apply(descriptor, args) as Promise<T>).then((r) => {
         val.set(mapKey, r)

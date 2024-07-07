@@ -12,37 +12,32 @@ const processStore = useProcessStore()
 export class CommonService {
   // login
   static loginService = async (user: User) => {
-    try {
-      const resp = await axios.post<ResultVO<{ user: User }>>('login', user)
-      const us = resp.data.data?.user
-      const token = resp.headers.token
-      const role = resp.headers.role
-      if (!us || !token || !role) {
-        throw '登录错误'
-      }
-      sessionStorage.setItem('token', token)
-      userStore.setUserSessionStorage(us, role)
-      if (user.number == user.password) {
-        router.push('/settings')
-        return
-      }
-      let path = ''
-      switch (role) {
-        case ADMIN:
-          path = '/admin'
-          break
-        case STUDENT:
-          path = '/student'
-          break
-        case TEACHER:
-          path = '/teacher'
-          break
-      }
-
-      router.push(path)
-    } catch (error) {
-      //
+    const resp = await axios.post<ResultVO<{ user: User }>>('login', user)
+    const us = resp.data.data?.user
+    const token = resp.headers.token
+    const role = resp.headers.role
+    if (!us || !token || !role) {
+      throw '登录错误'
     }
+    sessionStorage.setItem('token', token)
+    userStore.setUserSessionStorage(us, role)
+    if (user.number == user.password) {
+      router.push('/settings')
+      return
+    }
+    let path = ''
+    switch (role) {
+      case ADMIN:
+        path = '/admin'
+        break
+      case STUDENT:
+        path = '/student'
+        break
+      case TEACHER:
+        path = '/teacher'
+        break
+    }
+    router.push(path)
   }
 
   //

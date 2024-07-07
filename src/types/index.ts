@@ -23,13 +23,6 @@ export interface Teacher extends User {
   C?: number
 }
 
-export interface TeacherABC extends User {
-  total?: number
-  A?: number
-  B?: number
-  C?: number
-}
-
 export interface Process {
   id?: string
   name?: string

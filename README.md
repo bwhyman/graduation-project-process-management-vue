@@ -4,7 +4,7 @@
 
 #### 2024.07.06
 
-引入Descriptor解耦store缓存。
+引入Decorators解耦store缓存。
 
 #### 2024.06.29
 
