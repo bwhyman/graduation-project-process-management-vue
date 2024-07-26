@@ -1,8 +1,21 @@
 <script lang="ts" setup>
-import { SwitchButton, Setting } from '@element-plus/icons-vue'
 import router from '@/router'
 import { CommonService } from '@/services'
-const userS = CommonService.getStoreUserService()
+import { ADMIN, STUDENT, TEACHER } from '@/services/Const'
+import { useUserStore } from '@/stores/UserStore'
+import { Setting, SwitchButton } from '@element-plus/icons-vue'
+const userS = useUserStore().userS
+const role = CommonService.getRole()
+
+let nemuComponent: Component
+if (role == TEACHER) {
+  nemuComponent = defineAsyncComponent(() => import('@/views/main/header/teacher/IndexView.vue'))
+} else if (role == STUDENT) {
+  nemuComponent = defineAsyncComponent(() => import('@/views/main/header/student/IndexView.vue'))
+} else if (role == ADMIN) {
+  nemuComponent = defineAsyncComponent(() => import('@/views/main/header/admin/IndexView.vue'))
+}
+
 const logoutF = () => {
   sessionStorage.clear()
   router.push('/login')
@@ -22,7 +35,7 @@ const logoutF = () => {
 
     <!-- 基于权限加载上功能栏 -->
     <el-col :span="18">
-      <RouterView name="menu" />
+      <component :is="nemuComponent" />
     </el-col>
     <el-col :span="2">
       <el-icon id="logout" :size="32" color="red" @click="logoutF">

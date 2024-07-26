@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { ProcessItem, StudentAttach } from '@/types'
+import { CommonService } from '@/services'
 import { processAuths } from '@/services/Const'
-import { listProcessesService } from '@/services/AdminService'
+import type { ProcessItem, StudentAttach } from '@/types'
 import AddProcessVue from './processes/AddProcessVue.vue'
 import EditProcessVue from './processes/OperationProcessVue.vue'
 
-const processesS = await listProcessesService()
+const processesS = await CommonService.listProcessesService()
 
 const authC = computed(() => (authVal: string) => processAuths.find((pa) => pa.v === authVal)?.name)
 </script>

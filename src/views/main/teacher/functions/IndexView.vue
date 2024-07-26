@@ -1,20 +1,32 @@
 <script setup lang="ts">
 const components: { name: string; component: Component }[] = [
   {
-    name: '重置账号密码',
+    name: '过程管理',
+    component: defineAsyncComponent(() => import('./ProcessesView.vue'))
+  },
+  {
+    name: '导入学生',
+    component: defineAsyncComponent(() => import('./ImportStudentView.vue'))
+  },
+  {
+    name: '分配',
+    component: defineAsyncComponent(() => import('./AssignStudentView.vue'))
+  },
+  {
+    name: '分组',
+    component: defineAsyncComponent(() => import('./GroupingView.vue'))
+  },
+  {
+    name: '导入覆盖',
+    component: defineAsyncComponent(() => import('./ImportStudentsInfoView.vue'))
+  },
+  {
+    name: '重置密码',
     component: defineAsyncComponent(() => import('./ResetPasswordView.vue'))
   },
   {
-    name: '加载未选中学生信息',
-    component: defineAsyncComponent(() => import('./UnselectedStudents.vue'))
-  },
-  {
-    name: '导出互选表格',
-    component: defineAsyncComponent(() => import('./ExportStudentsSelected.vue'))
-  },
-  {
-    name: '导出分组/顺序表格',
-    component: defineAsyncComponent(() => import('./ExportStudentsGroup.vue'))
+    name: '更新学生导师',
+    component: defineAsyncComponent(() => import('./EditStudentVue.vue'))
   },
   {
     name: '导出详细成绩表格',

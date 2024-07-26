@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { Check } from '@element-plus/icons-vue'
-import type { Process, ProcessFile, StudentAttach } from '@/types'
+import { createElNotificationSuccess, createMessageDialog } from '@/components/message'
+import { CommonService } from '@/services'
 import {
   listProcessFilesService,
-  uploadFileSignatureService,
-  uploadFileService
+  uploadFileService,
+  uploadFileSignatureService
 } from '@/services/StudentService'
-import { createElNotificationSuccess, createMessageDialog } from '@/components/message'
-import { GoldMedal, WarningFilled } from '@element-plus/icons-vue'
-import { CommonService } from '@/services'
+import { useUserStore } from '@/stores/UserStore'
+import type { Process, ProcessFile, StudentAttach } from '@/types'
+import { Check, GoldMedal, WarningFilled } from '@element-plus/icons-vue'
 const route = useRoute()
 let params = route.params as { pid: string }
 
@@ -30,7 +30,7 @@ watch(
   { immediate: true }
 )
 const selectAttachR = ref<StudentAttach>()
-const userS = CommonService.getStoreUserService()
+const userS = useUserStore().userS
 
 const fileInputR = ref<HTMLInputElement>()
 const visableSubmitR = ref(false)

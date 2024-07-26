@@ -1,14 +1,14 @@
 <script lang="ts" setup>
-import type { User } from '@/types'
-import { Lock, User as UserIco, SwitchButton } from '@element-plus/icons-vue'
 import { CommonService } from '@/services'
+import type { User } from '@/types'
+import { Lock, SwitchButton, User as UserIco } from '@element-plus/icons-vue'
 
 let user = ref<User>({})
 
-let login = () => {
+let login = async () => {
   let number = user.value.number
   let password = user.value.password
-  CommonService.loginService({
+  await CommonService.loginService({
     number: number,
     password: password
   })

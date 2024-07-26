@@ -4,7 +4,7 @@ import { TeacherService } from '@/services/TeacherService'
 
 const exportScores = async () => {
   const result = await Promise.all([
-    TeacherService.getStudentsService(),
+    TeacherService.listStudentsService(),
     TeacherService.getAllProcessScoresService(),
     CommonService.listProcessesService()
   ])

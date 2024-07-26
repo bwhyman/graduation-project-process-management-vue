@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { createElNotificationSuccess } from '@/components/message'
-import { delProcessService } from '@/services/AdminService'
+import { TeacherService } from '@/services/TeacherService'
 import type { Process } from '@/types'
 import { Delete, Edit } from '@element-plus/icons-vue'
 import { createEditProcessDialog } from '.'
@@ -18,7 +18,7 @@ const delPorcessF = (pid: string) => {
       dangerouslyUseHTMLString: true
     }
   ).then(async () => {
-    await delProcessService(pid)
+    await TeacherService.delProcessService(pid)
     createElNotificationSuccess('过程已删除')
   })
 }

@@ -1,24 +1,25 @@
 <script setup lang="ts">
+import { CommonService } from '@/services'
+import { PA_REVIEW } from '@/services/Const'
 import { TeacherService } from '@/services/TeacherService'
+import { useUserStore } from '@/stores/UserStore'
 import type {
-  StudentProcessScore,
+  LevelCount,
   PSDetail,
   PSDetailTeacher,
   ProcessFile,
   ProcessScore,
-  Student,
-  LevelCount
+  StudentProcessScore
 } from '@/types'
-import { PA_REVIEW } from '@/services/Const'
+import { Box, Brush } from '@element-plus/icons-vue'
 import GroupTeacherView from './GroupTeacherView.vue'
-import { Brush, Box } from '@element-plus/icons-vue'
-import { CommonService } from '@/services'
 
+const userStore = useUserStore()
 // --------------------
 const params = useRoute().params as { pid: string; auth: string }
 
 const processFilesR = ref<ProcessFile[]>([])
-const userS = CommonService.getStoreUserService()
+const userS = userStore.userS
 
 const result = await Promise.all([
   params.auth == PA_REVIEW
@@ -55,14 +56,15 @@ function collectPS(pses: ProcessScore[]) {
     len: studentsS.value.length
   }
   currentPStudentsR.value = []
-  ;(studentsS.value as Student[]).forEach((student) => {
-    const stuD: StudentProcessScore = JSON.parse(JSON.stringify(student))
+  studentsS.value.forEach((student) => {
+    const stuD: StudentProcessScore = {}
+    stuD.student = JSON.parse(JSON.stringify(student))
     currentPStudentsR.value.push(stuD)
     let temp = 0
     stuD.psTeachers = []
     stuD.averageScore = temp
 
-    const teacherPSs = pses.filter((ps) => ps.studentId == stuD.id)
+    const teacherPSs = pses.filter((ps) => ps.studentId == stuD.student?.id)
     if (!teacherPSs) return
     teacherPSs.forEach((ps) => {
       const psDetail = ps.detail as PSDetail
@@ -149,11 +151,13 @@ const closeF = () => (gradingDialogVisable.value = false)
         <el-table-column type="index" label="#" width="50" />
         <el-table-column min-width="220">
           <template #default="scope">
-            <el-text type="primary" size="large">{{ scope.row.name }}</el-text>
+            <el-text type="primary" size="large">
+              {{ (scope.row as StudentProcessScore).student?.name }}
+            </el-text>
             <br />
-            {{ scope.row.student.teacherName }}
+            {{ (scope.row as StudentProcessScore).student?.student?.teacherName }}
             <br />
-            {{ scope.row.student.projectTitle }}
+            {{ (scope.row as StudentProcessScore).student?.student?.projectTitle }}
           </template>
         </el-table-column>
         <el-table-column label="附件">
@@ -163,8 +167,12 @@ const closeF = () => (gradingDialogVisable.value = false)
                 :icon="attach.number == 1 ? Box : Brush"
                 :color="attach.number == 1 ? '#409EFF' : '#626aef'"
                 style="margin-bottom: 5px"
-                @click="clickAttachF(scope.row.id, attach.number!)"
-                v-if="processFileC(scope.row.id, attach.number!)">
+                @click="
+                  clickAttachF((scope.row as StudentProcessScore).student?.id!, attach.number!)
+                "
+                v-if="
+                  processFileC((scope.row as StudentProcessScore).student?.id!, attach.number!)
+                ">
                 {{ attach.name }}
               </el-button>
               <br />
@@ -183,7 +191,9 @@ const closeF = () => (gradingDialogVisable.value = false)
         </el-table-column>
         <el-table-column label="操作" width="90">
           <template #default="scope">
-            <el-button type="primary" @click="gradeF(scope.row)">评分</el-button>
+            <el-button type="primary" @click="gradeF(scope.row as StudentProcessScore)">
+              评分
+            </el-button>
           </template>
         </el-table-column>
       </el-table>

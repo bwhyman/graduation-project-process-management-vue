@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { createElNotificationSuccess } from '@/components/message'
-import type { Process, ProcessItem, StudentAttach } from '@/types'
-import { Minus, Plus, Check } from '@element-plus/icons-vue'
 import { processAuths } from '@/services/Const'
+import { TeacherService } from '@/services/TeacherService'
+import type { Process, ProcessItem, StudentAttach } from '@/types'
+import { Check, Minus, Plus } from '@element-plus/icons-vue'
 import { render } from 'vue'
-import { updateProcessService } from '@/services/AdminService'
 
 const prop = defineProps<{ process: Process }>()
 const dialogVisible = ref(true)
@@ -40,7 +40,7 @@ const addAttachF = () => {
 }
 
 const updateProcessF = async () => {
-  await updateProcessService(processR.value)
+  await TeacherService.updateProcessService(processR.value)
   createElNotificationSuccess('过程更新成功')
   dialogVisible.value = false
   processR.value = {}

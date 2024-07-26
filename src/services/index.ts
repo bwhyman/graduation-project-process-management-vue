@@ -1,9 +1,9 @@
 import axios from '@/axios'
-import type { Process, ResultVO, User } from '@/types'
 import router from '@/router'
-import { STUDENT, ADMIN, TEACHER } from '@/services/Const'
+import { ADMIN, STUDENT, TEACHER } from '@/services/Const'
 import { useProcessStore } from '@/stores/ProcessStore'
 import { useUserStore } from '@/stores/UserStore'
+import type { Process, ResultVO, User } from '@/types'
 import { StoreCache } from './Decorators'
 
 const userStore = useUserStore()
@@ -21,7 +21,7 @@ export class CommonService {
     }
     sessionStorage.setItem('token', token)
     userStore.setUserSessionStorage(us, role)
-    if (user.number == user.password) {
+    if (user.number === user.password) {
       router.push('/settings')
       return
     }
@@ -48,16 +48,11 @@ export class CommonService {
   // 加缓存，不为空再发请求
   @StoreCache(processStore.processesS)
   static async listProcessesService() {
-    const role = sessionStorage.getItem('role')
-    let url = ''
-    if (role == TEACHER) {
-      url = 'teacher/processes'
-    } else if (role == STUDENT) {
-      url = 'student/processes'
-    }
-    const resp = await axios.get<ResultVO<{ processes: Process[] }>>(url)
+    const resp = await axios.get<ResultVO<{ processes: Process[] }>>('processes')
     return resp.data.data?.processes as unknown as Ref<Process[]>
   }
 
-  static getStoreUserService = () => userStore.userS
+  static getRole() {
+    return sessionStorage.getItem('role')
+  }
 }

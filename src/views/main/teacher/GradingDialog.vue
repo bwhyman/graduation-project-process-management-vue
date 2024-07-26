@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { CommonService } from '@/services'
+import { useUserStore } from '@/stores/UserStore'
 import type { PSDetail, ProcessScore, StudentProcessScore } from '@/types'
-
+const userStore = useUserStore()
 const dialogVisible = ref(true)
 //
 interface Props {
@@ -15,7 +16,7 @@ const processesS = await CommonService.listProcessesService()
 const process = processesS.value.find((p) => p.id == props.processId)
 // 过程项
 const processItems = process?.items ?? []
-const userS = CommonService.getStoreUserService()
+const userS = userStore.userS
 const currentTeacherScore = props.student.psTeachers?.find((t) => t.teacherId == userS.value!.id)
 const scoreInfoR = ref<ProcessScore>({})
 const psDetailR = ref<PSDetail>({})
@@ -71,7 +72,7 @@ const onInputF = (index: number) => {
 const submitF = () => {
   if (!userS.value) return
   scoreInfoR.value.teacherId = userS.value.id
-  scoreInfoR.value.studentId = props.student.id
+  scoreInfoR.value.studentId = props.student.student?.id
   scoreInfoR.value.processId = props.processId
   psDetailR.value.teacherName = userS.value.name
   scoreInfoR.value.detail = toRaw(psDetailR.value)
@@ -94,7 +95,7 @@ const widthC = computed(() => {
   <el-dialog v-model="dialogVisible" title="Grading" :width="widthC" @close="props.close">
     <el-row :gutter="10" class="row">
       <el-col :span="6" class="col-title">
-        <el-text type="primary" size="large">{{ props.student.name }}</el-text>
+        <el-text type="primary" size="large">{{ props.student.student?.name }}</el-text>
         平均分
       </el-col>
       <el-col :span="10">

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { createMessageDialog } from '@/components/message'
-import { getUserService } from '@/services/AdminService'
+import { TeacherService } from '@/services/TeacherService'
 import type { User } from '@/types'
 import { Search } from '@element-plus/icons-vue'
 
@@ -9,10 +8,9 @@ const userR = ref<User>()
 const getUserF = async () => {
   const account = accountR.value
   accountR.value = ''
-  const user = await getUserService(account)
+  const user = await TeacherService.getStudentService(account)
   if (!user) {
-    createMessageDialog('未找到该账号用户')
-    return
+    throw '未找到该账号用户'
   }
   userR.value = user
 }

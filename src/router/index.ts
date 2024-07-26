@@ -1,5 +1,6 @@
-import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
+import { CommonService } from '@/services'
 import * as consty from '@/services/Const'
+import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -21,18 +22,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: 'settings',
-        components: {
-          default: () => import('@/views/main/header/UserSettingView.vue'),
-          menu: () => {
-            const role = sessionStorage.getItem('role')
-            if (role == consty.STUDENT) {
-              return import('@/views/main/header/student/MenuView.vue')
-            }
-            if (role == consty.TEACHER) {
-              return import('@/views/main/header/teacher/MenuView.vue')
-            }
-          }
-        }
+        component: () => import('@/views/main/header/UserSettingView.vue')
       },
       {
         path: 'admin',
@@ -50,10 +40,7 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'student',
-        components: {
-          default: () => import('@/views/main/student/IndexView.vue'),
-          menu: () => import('@/views/main/header/student/MenuView.vue')
-        },
+        component: () => import('@/views/main/student/IndexView.vue'),
         meta: {
           roles: [consty.STUDENT]
         },
@@ -71,10 +58,7 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'teacher',
-        components: {
-          default: () => import('@/views/main/teacher/IndexView.vue'),
-          menu: () => import('@/views/main/header/teacher/MenuView.vue')
-        },
+        component: () => import('@/views/main/teacher/IndexView.vue'),
         meta: {
           roles: [consty.TEACHER]
         },
@@ -116,7 +100,7 @@ router.beforeEach((to) => {
     return true
   }
 
-  const role = to.meta.roles.find((r) => r == sessionStorage.getItem('role'))
+  const role = to.meta.roles.find((r) => r == CommonService.getRole())
   if (role) {
     return true
   }

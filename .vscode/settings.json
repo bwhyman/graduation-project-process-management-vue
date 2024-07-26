@@ -2,6 +2,9 @@
   "editor.fontSize": 16,
   "window.zoomLevel": 1.0,
   "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.wordWrap": "on",
   "git.enableSmartCommit": true,

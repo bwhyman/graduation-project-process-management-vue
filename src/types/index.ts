@@ -1,3 +1,7 @@
+export interface Department {
+  id?: string
+  name?: string
+}
 export interface User {
   id?: string
   name?: string
@@ -6,17 +10,18 @@ export interface User {
   groupNumber?: number
   student?: Student
   teacher?: Teacher
+  departmentId?: string
   insertTime?: string
   updateTime?: string
 }
-export interface Student extends User {
+export interface Student {
   teacherId?: string
   teacherName?: string
   queueNumber?: number
   projectTitle?: string
 }
 
-export interface Teacher extends User {
+export interface Teacher {
   total?: number
   A?: number
   B?: number
@@ -30,6 +35,7 @@ export interface Process {
   point?: number
   studentAttach?: StudentAttach[]
   items?: ProcessItem[]
+  departmentId?: string
 }
 
 export interface StudentAttach {
@@ -68,7 +74,8 @@ export interface PSDetailTeacher {
   detail?: { number: number; score: number }[]
 }
 
-export interface StudentProcessScore extends Student {
+export interface StudentProcessScore {
+  student?: User
   averageScore?: number
   currentTeacherScore?: number
   psTeachers?: PSDetailTeacher[]

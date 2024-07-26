@@ -1,4 +1,4 @@
-import type { User, Student, ProcessScore, ProcessItem, Process, PSDetail } from '@/types'
+import type { PSDetail, Process, ProcessItem, ProcessScore, Student, User } from '@/types'
 import * as XLSX from 'xlsx'
 
 // 读取学生表格
@@ -50,19 +50,20 @@ export function readTeacherFile(file: Blob) {
 export function readProjectTitles(file: Blob) {
   return new Promise<User[]>((resolve) => {
     const reader = new FileReader()
-    const projects: Student[] = []
+    const students: User[] = []
     reader.onload = (e: ProgressEvent<FileReader>) => {
       const data = e.target?.result
       const wb = XLSX.read(data, { type: 'binary' })
       const sheet = wb.Sheets[wb.SheetNames[0]]
       XLSX.utils.sheet_to_json(sheet).forEach((r: any) => {
-        projects.push({ number: r['账号'].toString(), projectTitle: r['题目'] })
+        const stu: Student = { projectTitle: r['题目'] }
+        students.push({ number: r['账号'].toString(), student: stu })
       })
     }
     reader.onloadend = () => {
-      resolve(projects)
+      resolve(students)
     }
-    reader.readAsBinaryString(file)
+    reader.readAsArrayBuffer(file)
   })
 }
 
@@ -79,19 +80,17 @@ export function exportExcelFile(array: any[], sheetName = 'students', fileName =
 }
 
 // 导出分组表格
-export const exportGroupExcelFile = (
-  map: Map<number, { students: Student[]; teachers: User[] }>
-) => {
+export const exportGroupExcelFile = (map: Map<number, User[]>) => {
   const workBook = XLSX.utils.book_new()
 
   map.forEach((value, key) => {
-    const students = value.students.map((stu) => {
+    const students = value.map((stu) => {
       return {
-        序号: stu.queueNumber,
+        序号: stu.student?.queueNumber,
         学号: stu.number,
         姓名: stu.name,
-        指导教师: stu.teacherName,
-        毕设题目: stu.projectTitle
+        指导教师: stu.student?.teacherName,
+        毕设题目: stu.student?.projectTitle
       }
     })
     const jsonWorkSheet = XLSX.utils.json_to_sheet(students)
@@ -159,7 +158,7 @@ export const exportScoreExcelFile = (
   return XLSX.writeFile(workBook, '学生详细成绩表格.xlsx')
 }
 
-// 读取带评分的学生表格
+// 读取带成绩排名的学生表格
 export function readStudentForSelectionFile(file: Blob) {
   return new Promise<User[]>((resolve) => {
     const reader = new FileReader()
@@ -175,27 +174,26 @@ export function readStudentForSelectionFile(file: Blob) {
     reader.onloadend = () => {
       resolve(students)
     }
-    reader.readAsBinaryString(file)
+    reader.readAsArrayBuffer(file)
   })
 }
 
 //
-export const readStudents2 = (file: Blob) => {
+export const readStudentsAllInfo = (file: Blob) => {
   return new Promise<User[]>((resolve) => {
     const reader = new FileReader()
-    const students: Student[] = []
+    const students: User[] = []
     reader.onload = (e: ProgressEvent<FileReader>) => {
       const data = e.target?.result
       const wb = XLSX.read(data, { type: 'binary' })
       const sheet = wb.Sheets[wb.SheetNames[0]]
       XLSX.utils.sheet_to_json(sheet).forEach((r: any) => {
         if (r['#']) {
+          const stu = { queueNumber: r['#'].toString(), projectTitle: r['题目'].toString() }
           students.push({
             name: r['姓名'],
             number: r['账号'].toString(),
-            queueNumber: r['#'].toString(),
-            projectTitle: r['题目'].toString(),
-            groupNumber: r['分组'].toString()
+            student: stu
           })
         }
       })

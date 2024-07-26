@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { Check } from '@element-plus/icons-vue'
-import type { User } from '@/types'
-import { readProjectTitles } from '@/services/ExcelUtils'
-import { addProjectTitles } from '@/services/AdminService'
 import { createElNotificationSuccess } from '@/components/message'
+import { readProjectTitles } from '@/services/ExcelUtils'
+import type { User } from '@/types'
+import { Check } from '@element-plus/icons-vue'
 
 const projects = ref<User[]>([])
 const readProjects = (event: Event) => {
@@ -17,7 +16,7 @@ const readProjects = (event: Event) => {
 }
 
 const add = async () => {
-  await addProjectTitles(projects.value)
+  //await AdminService.addProjectTitles(projects.value)
   createElNotificationSuccess('题目导入成功')
 }
 </script>

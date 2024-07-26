@@ -1,121 +1,47 @@
 import axios from '@/axios'
-import type { Process, ProcessItem, ResultVO, Student, StudentAttach, Teacher, User } from '@/types'
-import { useProcessStore } from '@/stores/ProcessStore'
-import { createElNotificationSuccess } from '@/components/message'
+import { useDepartmentStore } from '@/stores/DepartmentStore'
+import type { Department, ResultVO, User } from '@/types'
+import { StoreCache } from './Decorators'
 
-const processStore = useProcessStore()
+const ADMIN = 'admin'
 
-//
-export const updateStartTime = async (time: string) => {
-  await axios.put<ResultVO<{}>>(`admin/starttime/${time}`)
-}
+const departmentStore = useDepartmentStore()
 
-//
-export const addStudents = async (students: User[]) => {
-  students.forEach((stu) => {
-    //@ts-ignore
-    stu.student = JSON.stringify(stu.student)
-  })
-  await axios.post('admin/students', students)
-}
-
-export const addTeachers = async (teachers: Teacher[]) => {
-  teachers.forEach((t) => {
-    // @ts-ignore
-    t.teacher = JSON.stringify(t.teacher)
-  })
-  await axios.post('admin/teachers', teachers)
-}
-
-//
-export const addProjectTitles = async (titles: Student[]) => {
-  await axios.post<ResultVO<{}>>('admin/students/projects', titles)
-}
-
-//
-export const updateGroupAndQueue = async (students: Student[]) => {
-  await axios.post('admin/grouping', students)
-}
-
-//
-export const getGroupInfo = async () => {
-  const resp = await axios.get<ResultVO<{ students: User[]; teachers: User[] }>>('admin/grouping')
-  const teachers = resp.data.data?.teachers ?? []
-  const students = resp.data.data?.students ?? []
-  return { students, teachers }
-}
-
-//
-export const addProcessService = async (ps: Process) => {
-  if ((ps.items as ProcessItem[])?.length > 0) {
-    // @ts-ignore
-    ps.items = JSON.stringify(ps.items)
+export class AdminService {
+  static addTeachers = async (teachers: User[], depid: string) => {
+    teachers.forEach((t) => {
+      // @ts-ignore
+      t.teacher = JSON.stringify(t.teacher)
+    })
+    await axios.post(`${ADMIN}/teachers/${depid}`, teachers)
   }
-  if ((ps.studentAttach as StudentAttach[])?.length > 0) {
-    // @ts-ignore
-    ps.studentAttach = JSON.stringify(ps.studentAttach)
+  //
+  static updateUserGroupService = async (user: User) => {
+    const resp = await axios.patch(`${ADMIN}/groups`, user)
+    return true
   }
-  const resp = await axios.post<ResultVO<{ processes: Process[] }>>('admin/processes', ps)
 
-  const processesS = processStore.processesS
-  processesS.value = resp.data.data?.processes ?? []
-}
+  @StoreCache(departmentStore.departmentsS)
+  static async listDepartmentsService() {
+    const resp = await axios.get<ResultVO<{ departments: Department[] }>>(`${ADMIN}/departments`)
+    return resp.data.data?.departments as unknown as Ref<Department[]>
+  }
 
-export const resetData = async () => {
-  await axios.post('admin/resetdata')
-  createElNotificationSuccess('数据重置成功')
-}
+  //
+  @StoreCache(departmentStore.departmentsS, true)
+  static async addDepartmentService(name: string) {
+    const resp = await axios.post<ResultVO<{ departments: Department[] }>>(`${ADMIN}/departments`, {
+      name
+    })
+    return resp.data.data?.departments as unknown as Ref<Department[]>
+  }
 
-export const listTeachersService = async () => {
-  const resp = await axios.get<ResultVO<{ teachers: Teacher[] }>>('admin/teachers')
-  const teachers = resp.data.data?.teachers ?? []
-  return teachers
-}
-
-//
-export const addStudentsAll = async (students: Student[]) => {
-  await axios.post('admin/students/all', students)
-}
-//
-export const listProcessesService = async () => {
-  const processesS = processStore.processesS
-  if (processesS.value.length > 0) return processesS
-  const resp = await axios.get<ResultVO<{ processes: Process[] }>>('admin/processes')
-  processesS.value = resp.data.data?.processes ?? []
-  return processesS
-}
-//
-export const delProcessService = async (pid: string) => {
-  const resp = await axios.delete<ResultVO<{ processes: Process[] }>>(`admin/processes/${pid}`)
-  processStore.processesS.value = resp.data.data?.processes ?? []
-  return true
-}
-
-//
-export const updateProcessService = async (process: Process) => {
-  // @ts-ignore
-  process.items = JSON.stringify(process.items)
-  // @ts-ignore
-  process.studentAttach = JSON.stringify(process.studentAttach)
-  const resp = await axios.patch<ResultVO<{ processes: Process[] }>>('admin/processes', process)
-  processStore.processesS.value = resp.data.data?.processes ?? []
-}
-
-//
-export const getUserService = async (account: string) => {
-  const resp = await axios.get<ResultVO<{ student: Student }>>(`admin/users/${account}`)
-  return resp.data.data?.student
-}
-//
-export const updateStudentTeacherService = async (sid: string, student: Student) => {
-  const user: User = { student: student }
-  // @ts-ignore
-  user.student = JSON.stringify(user.student)
-  const resp = axios.patch(`admin/students/${sid}/student`, user)
-  return true
-}
-//
-export const updateUserGroupService = async (user: User) => {
-  const resp = await axios.patch('admin/groups', user)
-  return true
+  //
+  @StoreCache(departmentStore.departmentsS, true)
+  static async delDepartmentService(did: string) {
+    const resp = await axios.delete<ResultVO<{ departments: Department[] }>>(
+      `${ADMIN}/departments/${did}`
+    )
+    return resp.data.data?.departments as unknown as Ref<Department[]>
+  }
 }
