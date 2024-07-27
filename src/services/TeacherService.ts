@@ -208,4 +208,13 @@ export class TeacherService {
     const resp = await axios.get<ResultVO<{ user: User }>>(`${TEACHER}/users/${account}`)
     return resp.data.data?.user
   }
+
+  //
+  @StoreClear(usersStore.clear, infosStore.clear)
+  static async updateStudentService(student: User) {
+    // @ts-ignore
+    student.student && (student.student = JSON.stringify(student.student))
+    const resp = await axios.patch(`${TEACHER}/student`, student)
+    return true
+  }
 }

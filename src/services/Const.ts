@@ -1,6 +1,6 @@
-export const STUDENT = 'zE1Ny'
-export const TEACHER = 'MjA5N'
-export const ADMIN = 'iaWF0'
+export const STUDENT = 'qpCf'
+export const TEACHER = 'kU4T'
+export const ADMIN = 'R2md'
 
 export const PA_TUTOR = 'AsImV'
 export const PA_REVIEW = 'zg0NS'

@@ -29,6 +29,7 @@ const submitF = async () => {
       ...stu.student
     }
   })
+
   await TeacherService.updateStudentsService(allStudentsR.value)
   loading.close()
   allStudentsR.value = []
@@ -37,8 +38,8 @@ const submitF = async () => {
 </script>
 <template>
   <el-row class="my-row">
+    <el-col class="my-col">读取并覆盖，包含顺序/分组/题目的学生表格：</el-col>
     <el-col class="my-col" :span="6">
-      读取并覆盖，包含顺序/分组/题目的学生表格：
       <input type="file" @change="readStu" />
     </el-col>
     <el-col :span="2">

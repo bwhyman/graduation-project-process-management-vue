@@ -25,12 +25,12 @@ const components: { name: string; component: Component }[] = [
     component: defineAsyncComponent(() => import('./ResetPasswordView.vue'))
   },
   {
-    name: '更新学生导师',
-    component: defineAsyncComponent(() => import('./EditStudentVue.vue'))
+    name: '更新用户信息',
+    component: defineAsyncComponent(() => import('./EditUserView.vue'))
   },
   {
     name: '导出详细成绩表格',
-    component: defineAsyncComponent(() => import('./ExportScores.vue'))
+    component: defineAsyncComponent(() => import('./ExportScoresView.vue'))
   }
 ]
 

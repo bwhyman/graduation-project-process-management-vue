@@ -191,6 +191,7 @@ export const readStudentsAllInfo = (file: Blob) => {
         if (r['#']) {
           const stu = { queueNumber: r['#'].toString(), projectTitle: r['题目'].toString() }
           students.push({
+            groupNumber: r['分组'],
             name: r['姓名'],
             number: r['账号'].toString(),
             student: stu

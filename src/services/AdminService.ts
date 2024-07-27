@@ -15,11 +15,6 @@ export class AdminService {
     })
     await axios.post(`${ADMIN}/teachers/${depid}`, teachers)
   }
-  //
-  static updateUserGroupService = async (user: User) => {
-    const resp = await axios.patch(`${ADMIN}/groups`, user)
-    return true
-  }
 
   @StoreCache(departmentStore.departmentsS)
   static async listDepartmentsService() {

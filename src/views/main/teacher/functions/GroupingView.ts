@@ -11,10 +11,12 @@ export const exportGroup = async (students: User[]) => {
     }
     mapValue.push(stu)
   })
-
   map.forEach((value) => {
     value.sort((s1, s2) => s1.student?.queueNumber! - s2.student?.queueNumber!)
   })
-
-  import('@/services/ExcelUtils').then(({ exportGroupExcelFile }) => exportGroupExcelFile(map))
+  // 按组排序
+  const sortedAsc = new Map([...map].sort())
+  import('@/services/ExcelUtils').then(({ exportGroupExcelFile }) =>
+    exportGroupExcelFile(sortedAsc)
+  )
 }
