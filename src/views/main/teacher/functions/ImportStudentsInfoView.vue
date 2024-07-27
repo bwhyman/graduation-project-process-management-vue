@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { createElLoading } from '@/components/loading'
 import { createElNotificationSuccess } from '@/components/message'
 import { readStudentsAllInfo } from '@/services/ExcelUtils'
 import { TeacherService } from '@/services/TeacherService'
 import type { User } from '@/types'
+
+const students = await TeacherService.listStudentsService()
+
 const allStudentsR = ref<User[]>([])
 
 const readStu = async (event: Event) => {
@@ -17,10 +19,9 @@ const readStu = async (event: Event) => {
 
   element.value = ''
 }
+
 // ----------------
 const submitF = async () => {
-  const loading = createElLoading()
-  const students = await TeacherService.listStudentsService()
   allStudentsR.value.forEach((stu) => {
     // 取出原student中属性值
     const oldStu = students.value.find((s) => s.number === stu.number)
@@ -29,9 +30,7 @@ const submitF = async () => {
       ...stu.student
     }
   })
-
   await TeacherService.updateStudentsService(allStudentsR.value)
-  loading.close()
   allStudentsR.value = []
   createElNotificationSuccess('学生导入成功')
 }

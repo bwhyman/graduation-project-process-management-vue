@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { createElLoading } from '@/components/loading'
 import { createElNotificationSuccess } from '@/components/message'
 import { readStudentForSelectionFile } from '@/services/ExcelUtils'
 import { TeacherService } from '@/services/TeacherService'
@@ -20,9 +19,7 @@ const readStu = async (event: Event) => {
 
 // ----------------
 const submitF = async () => {
-  const loading = createElLoading()
   await TeacherService.addStudentsService(allStudentsR.value)
-  loading.close()
   allStudentsR.value = []
   createElNotificationSuccess('学生导入成功')
 }

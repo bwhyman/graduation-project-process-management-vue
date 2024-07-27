@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { createElLoading } from '@/components/loading'
 import { createElNotificationSuccess } from '@/components/message'
 import { TeacherService } from '@/services/TeacherService'
 import type { User } from '@/types'
@@ -127,9 +126,7 @@ const randomF = () => {
 
 // ----------------
 const submitF = async () => {
-  const loading = createElLoading()
   await TeacherService.updateStudentsService(studentsTR.value)
-  loading.close()
   createElNotificationSuccess('学生分配提交成功')
 }
 //

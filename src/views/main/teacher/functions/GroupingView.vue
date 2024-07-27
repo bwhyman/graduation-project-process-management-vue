@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { createElLoading } from '@/components/loading'
 import { createElNotificationSuccess } from '@/components/message'
 import { TeacherService } from '@/services/TeacherService'
 import type { Student, User } from '@/types'
@@ -136,7 +135,6 @@ const grouping = () => {
 
 // -----------
 const updateGroupF = async () => {
-  const loading = createElLoading()
   const students: User[] = []
   newStuGroupMap.value.forEach((value, key) => {
     for (let i = 0; i < value.students.length!; i++) {
@@ -146,7 +144,6 @@ const updateGroupF = async () => {
     }
   })
   await TeacherService.updateStudentsService(students)
-  loading.close()
   createElNotificationSuccess('更新学生分组成功')
 }
 //

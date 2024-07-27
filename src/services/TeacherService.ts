@@ -14,7 +14,7 @@ import type {
   StudentAttach,
   User
 } from '@/types'
-import { StoreCache, StoreClear } from './Decorators'
+import { ELLoading, StoreCache, StoreClear } from './Decorators'
 
 const TEACHER = 'teacher'
 
@@ -175,6 +175,7 @@ export class TeacherService {
   }
 
   //
+  @ELLoading()
   @StoreCache(usersStore.allStudentsS, true)
   static async addStudentsService(students: User[]) {
     students.forEach((stu) => {
@@ -186,6 +187,7 @@ export class TeacherService {
   }
 
   // 更新学生信息
+  @ELLoading()
   @StoreClear(infosStore.clear)
   @StoreCache(usersStore.allStudentsS, true)
   static async updateStudentsService(students: User[]) {
@@ -197,6 +199,7 @@ export class TeacherService {
     return resp.data.data?.students as unknown as Ref<User[]>
   }
 
+  @ELLoading()
   @StoreCache(usersStore.allStudentsS)
   static async listStudentsService() {
     const resp = await axios.get<ResultVO<{ students: User[] }>>(`${TEACHER}/students`)

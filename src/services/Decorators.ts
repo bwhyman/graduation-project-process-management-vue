@@ -1,3 +1,4 @@
+import { createElLoading } from '@/components/loading'
 import type { Ref } from 'vue'
 
 /**
@@ -70,6 +71,23 @@ export function StoreClear(...clears: Function[]) {
         clear()
       }
       return originalMethod.apply(descriptor, args)
+    }
+    return descriptor
+  }
+}
+
+export function ELLoading() {
+  return (_: any, __: string, descriptor: PropertyDescriptor) => {
+    const originalMethod = descriptor.value
+    descriptor.value = async (...args: any[]) => {
+      let r
+      const loading = createElLoading()
+      try {
+        r = await originalMethod.apply(descriptor, args)
+      } finally {
+        loading.close()
+      }
+      return r
     }
     return descriptor
   }
