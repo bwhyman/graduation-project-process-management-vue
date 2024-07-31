@@ -47,6 +47,7 @@ export class TeacherService {
 
   // 加载指定过程评分
   @StoreCache(processInfosStore.processScoresS)
+  @ELLoading()
   static async listProcessesProcessScoresService(pid: string, auth: string) {
     const resp = await axios.get<ResultVO<{ processScores: ProcessScore[] }>>(
       `${TEACHER}/processes/${pid}/types/${auth}`
@@ -55,7 +56,9 @@ export class TeacherService {
   }
 
   // 添加评分
-  @StoreCache(processInfosStore.processScoresS, true)
+  @StoreClear(processInfosStore.clear)
+  @StoreCache(processInfosStore.processScoresS)
+  @ELLoading()
   static async addPorcessScoreService(ps: ProcessScore, auth: string) {
     // @ts-ignore
     ps.detail = JSON.stringify(ps.detail)
@@ -84,6 +87,7 @@ export class TeacherService {
 
   // 获取全部学生评分
   @StoreCache(processInfosStore.allProcessScoresS)
+  @ELLoading()
   static async getAllProcessScoresService() {
     const resp = await axios.get<ResultVO<{ processScores: ProcessScore[] }>>(
       `${TEACHER}/processscores`
@@ -123,6 +127,7 @@ export class TeacherService {
 
   // 加载小组全部评分
   @StoreCache(processInfosStore.groupProcessScoresS)
+  @ELLoading()
   static async listProcessScoresGroupService() {
     const resp = await axios.get<ResultVO<{ processScores: ProcessScore[] }>>(
       `${TEACHER}/processscores/groups`
@@ -175,8 +180,8 @@ export class TeacherService {
   }
 
   //
-  @ELLoading()
   @StoreCache(usersStore.allStudentsS, true)
+  @ELLoading()
   static async addStudentsService(students: User[]) {
     students.forEach((stu) => {
       //@ts-ignore
@@ -187,9 +192,9 @@ export class TeacherService {
   }
 
   // 更新学生信息
-  @ELLoading()
   @StoreClear(infosStore.clear)
   @StoreCache(usersStore.allStudentsS, true)
+  @ELLoading()
   static async updateStudentsService(students: User[]) {
     students.forEach((stu) => {
       //@ts-ignore
@@ -199,8 +204,8 @@ export class TeacherService {
     return resp.data.data?.students as unknown as Ref<User[]>
   }
 
-  @ELLoading()
   @StoreCache(usersStore.allStudentsS)
+  @ELLoading()
   static async listStudentsService() {
     const resp = await axios.get<ResultVO<{ students: User[] }>>(`${TEACHER}/students`)
     return resp.data.data?.students as unknown as Ref<User[]>
@@ -217,7 +222,7 @@ export class TeacherService {
   static async updateStudentService(student: User) {
     // @ts-ignore
     student.student && (student.student = JSON.stringify(student.student))
-    const resp = await axios.patch(`${TEACHER}/student`, student)
+    await axios.patch(`${TEACHER}/student`, student)
     return true
   }
 }

@@ -15,7 +15,7 @@ export function StoreCache(dataR: Ref<any>, replace = false) {
       // 响应式对象存在，直接返回
       if (
         !replace &&
-        ((Object.prototype.toString.call(val) === '[object Array]' && (val as []).length > 0) ||
+        (Object.prototype.toString.call(val) === '[object Array]' ||
           Object.prototype.toString.call(val) === '[object Object]')
       ) {
         return Promise.resolve(dataR)
