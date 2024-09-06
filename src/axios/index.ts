@@ -1,6 +1,6 @@
-import axios from 'axios'
-import type { ResultVO } from '@/types'
 import { createMessageDialog } from '@/components/message'
+import type { ResultVO } from '@/types'
+import axios from 'axios'
 
 axios.defaults.baseURL = '/api/'
 
@@ -60,15 +60,13 @@ axios.interceptors.response.use(
     }
 
     if (data.code >= 400) {
-      data.message && createMessageDialog(data.message)
-      return Promise.reject()
+      return Promise.reject(data.message)
     }
     return resp
   },
   // 全局处理异常信息。即，http状态码不是200
   (error) => {
-    error.message && createMessageDialog(error.message)
-    return Promise.reject()
+    return Promise.reject(error.message)
   }
 )
 
