@@ -1,6 +1,6 @@
-import axios from '@/axios'
+import { useDelete, useGet, usePost } from '@/axios'
 import { useDepartmentStore } from '@/stores/DepartmentStore'
-import type { Department, ResultVO, User } from '@/types'
+import type { Department, User } from '@/types'
 import { StoreCache } from './Decorators'
 
 const ADMIN = 'admin'
@@ -13,30 +13,28 @@ export class AdminService {
       // @ts-ignore
       t.teacher = JSON.stringify(t.teacher)
     })
-    await axios.post(`${ADMIN}/teachers/${depid}`, teachers)
+    await usePost(`${ADMIN}/teachers/${depid}`, teachers)
   }
 
   @StoreCache(departmentStore.departmentsS)
   static async listDepartmentsService() {
-    const resp = await axios.get<ResultVO<{ departments: Department[] }>>(`${ADMIN}/departments`)
-    return resp.data.data?.departments as unknown as Ref<Department[]>
+    const data = await useGet(`${ADMIN}/departments`)
+    return data as unknown as Ref<Department[]>
   }
 
   //
   @StoreCache(departmentStore.departmentsS, true)
   static async addDepartmentService(name: string) {
-    const resp = await axios.post<ResultVO<{ departments: Department[] }>>(`${ADMIN}/departments`, {
+    const data = await usePost<Department[]>(`${ADMIN}/departments`, {
       name
     })
-    return resp.data.data?.departments as unknown as Ref<Department[]>
+    return data as unknown as Ref<Department[]>
   }
 
   //
   @StoreCache(departmentStore.departmentsS, true)
   static async delDepartmentService(did: string) {
-    const resp = await axios.delete<ResultVO<{ departments: Department[] }>>(
-      `${ADMIN}/departments/${did}`
-    )
-    return resp.data.data?.departments as unknown as Ref<Department[]>
+    const data = await useDelete<Department[]>(`${ADMIN}/departments/${did}`)
+    return data as unknown as Ref<Department[]>
   }
 }

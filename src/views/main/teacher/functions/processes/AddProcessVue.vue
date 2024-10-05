@@ -12,7 +12,12 @@ const processItemsR = ref<ProcessItem[]>(processR.value.items ?? [])
 //
 const processAttachR = ref<StudentAttach>({})
 const processAttachsR = ref<StudentAttach[]>(processR.value.studentAttach ?? [])
-
+watch(dialogVisible, () => {
+  if (dialogVisible.value) {
+    processR.value = {}
+    processItemsR.value.length = 0
+  }
+})
 const delItemF = (item: ProcessItem) => {
   const index = processItemsR.value.indexOf(item)
   processItemsR.value.splice(index, 1)

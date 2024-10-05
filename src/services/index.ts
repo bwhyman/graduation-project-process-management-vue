@@ -1,4 +1,4 @@
-import axios from '@/axios'
+import axios, { useGet, usePost } from '@/axios'
 import router from '@/router'
 import { ADMIN, STUDENT, TEACHER } from '@/services/Const'
 import { useProcessStore } from '@/stores/ProcessStore'
@@ -12,8 +12,8 @@ const processStore = useProcessStore()
 export class CommonService {
   // login
   static loginService = async (user: User) => {
-    const resp = await axios.post<ResultVO<{ user: User }>>('login', user)
-    const us = resp.data.data?.user
+    const resp = await axios.post<ResultVO<User>>('login', user)
+    const us = resp.data.data
     const token = resp.headers.token
     const role = resp.headers.role
     if (!us || !token || !role) {
@@ -42,14 +42,14 @@ export class CommonService {
 
   //
   static updateSelfPassword = async (pwd: string) => {
-    await axios.post('passwords', { password: pwd })
+    await usePost('passwords', { password: pwd })
   }
 
   // 加缓存，不为空再发请求
   @StoreCache(processStore.processesS)
   static async listProcessesService() {
-    const resp = await axios.get<ResultVO<{ processes: Process[] }>>('processes')
-    return resp.data.data?.processes as unknown as Ref<Process[]>
+    const data = await useGet<Process[]>('processes')
+    return data as unknown as Ref<Process[]>
   }
 
   static getRole() {

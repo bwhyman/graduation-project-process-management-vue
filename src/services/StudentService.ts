@@ -1,4 +1,4 @@
-import axios from '@/axios'
+import axios, { useGet } from '@/axios'
 import type { ProcessFile, ResultVO } from '@/types'
 
 const STUDENT = 'student'
@@ -10,20 +10,18 @@ export const uploadFileService = async (
   encoder: string,
   fdata: FormData
 ) => {
-  const resp = await axios.post<ResultVO<{ processfiles: ProcessFile[] }>>(
+  const resp = await axios.post<ResultVO<ProcessFile[]>>(
     `${STUDENT}/upload/${pid}/numbers/${num}`,
     fdata,
     { headers: { xtoken: encoder } }
   )
-  return resp.data.data?.processfiles ?? []
+  return resp.data.data
 }
 //
 export const listProcessFilesService = async (pid: string) => {
-  const resp = await axios.get<ResultVO<{ processfiles: ProcessFile[] }>>(
-    `${STUDENT}/processfiles/${pid}`
-  )
+  const data = await useGet<ProcessFile[]>(`${STUDENT}/processfiles/${pid}`)
 
-  return resp.data.data?.processfiles ?? []
+  return data
 }
 
 // 摘要
