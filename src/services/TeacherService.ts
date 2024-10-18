@@ -196,8 +196,7 @@ export class TeacherService {
 
   //
   static getStudentService = async (account: string) => {
-    const data = await useGet<User>(`${TEACHER}/users/${account}`)
-    return data
+    return await useGet<User>(`${TEACHER}/users/${account}`)
   }
 
   //

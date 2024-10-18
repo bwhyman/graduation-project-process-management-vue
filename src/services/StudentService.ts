@@ -20,7 +20,6 @@ export const uploadFileService = async (
 //
 export const listProcessFilesService = async (pid: string) => {
   const data = await useGet<ProcessFile[]>(`${STUDENT}/processfiles/${pid}`)
-
   return data
 }
 

@@ -55,7 +55,7 @@ axios.interceptors.response.use(
 
     const data: ResultVO<{}> = resp.data
     if (data.code < 300) {
-      parseObject(resp.data.data)
+      parseObject(resp.data)
       return resp
     }
 

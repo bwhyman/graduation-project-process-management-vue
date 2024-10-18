@@ -28,7 +28,7 @@ body {
 }
 
 #app {
-  max-width: 960px;
+  max-width: 1200px;
   background: indigo;
   min-height: 100vh;
   border-radius: 4px;
