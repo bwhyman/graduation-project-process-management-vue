@@ -15,11 +15,14 @@ interface TeacherTemp {
   levelB?: User[]
   levelC?: User[]
 }
-const allTeachersR = await TeacherService.listTeachersService()
-const allStudentsR = await TeacherService.listStudentsService()
+const results = await Promise.all([
+  TeacherService.listTeachersService(),
+  TeacherService.listStudentsService()
+])
+const allTeachersR = results[0]
+const allStudentsR = results[1]
 const studentsTR = ref<User[]>([])
 const teachersR = ref<TeacherTemp[]>([])
-const studentsAmount = ref(0)
 let totalA = 0
 let totalC = 0
 
@@ -32,6 +35,7 @@ allTeachersR.value.forEach((teach) => {
     total: teach.teacher?.total,
     A: teach.teacher?.A,
     C: teach.teacher?.C,
+    B: teach.teacher?.total! - teach?.teacher?.A! - teach?.teacher?.C!,
     levelA: [],
     levelB: [],
     levelC: []
@@ -40,66 +44,71 @@ allTeachersR.value.forEach((teach) => {
 })
 
 const randomF = () => {
+  const studentsA = allStudentsR.value.slice(0, totalA)
+  const studentsB = allStudentsR.value.slice(totalA, allStudentsR.value.length - totalC)
+  const studentsC = allStudentsR.value.slice(allStudentsR.value.length - totalC)
   teachersR.value.forEach((teach) => {
     teach.levelA = []
     teach.levelB = []
     teach.levelC = []
   })
-  studentsAmount.value = 0
-
-  const students = allStudentsR.value
-
-  // A
-  let studentsTemp = students.concat()
-  let teachersTemp = teachersR.value.concat().filter((teach) => teach.A != 0)
-  for (let i = 0; i < totalA; i++) {
-    if (teachersTemp.length == 0) {
-      teachersTemp = teachersR.value.concat().filter((teach) => teach.A != 0)
-    }
-    let rand = Math.floor(Math.random() * teachersTemp.length)
-    const currentTeacher = teachersTemp[rand]
-    currentTeacher.levelA?.push(studentsTemp[i])
-    teachersTemp.splice(rand, 1)
-  }
-
-  // C
-  studentsTemp = students.reverse()
-  teachersTemp = teachersR.value.concat().filter((teach) => teach.C != 0)
-  for (let i = 0; i < totalC; i++) {
-    if (teachersTemp.length == 0) {
-      teachersTemp = teachersR.value.concat().filter((teach) => teach.C != 0)
-    }
-    let rand = Math.floor(Math.random() * teachersTemp.length)
-    const currentTeacher = teachersTemp[rand]
-    currentTeacher.levelC?.push(studentsTemp[i])
-    teachersTemp.splice(rand, 1)
-  }
-
-  // B
-  studentsTemp = students.reverse().concat()
-  teachersTemp = teachersR.value.concat().filter((teach) => teach.B != 0)
-  for (let i = totalA; i < students.length! - totalC; i++) {
-    let stop = true
-    while (stop) {
-      let rand = Math.floor(Math.random() * teachersR.value.length)
-      const currentTeacher = teachersR.value[rand]
-      const t =
-        currentTeacher.levelA?.length! +
-        currentTeacher.levelB?.length! +
-        currentTeacher.levelC?.length!
-      if (currentTeacher.total! > t) {
-        currentTeacher.levelB?.push(studentsTemp[i])
-        stop = false
+  const teachsTemp: TeacherTemp[] = []
+  studentsA.forEach((stu) => {
+    let notFull = true
+    while (notFull) {
+      if (teachsTemp.length == 0) {
+        teachsTemp.push(...teachersR.value)
       }
-      if (t >= currentTeacher.total!) {
-        teachersTemp.splice(rand, 1)
+      let rand = Math.floor(Math.random() * teachsTemp.length)
+      const teacher = teachsTemp[rand]
+      if (teacher.A == 0 || teacher.levelA?.length == teacher.A) {
+        teachsTemp.splice(rand, 1)
+        continue
       }
+      teacher.levelA?.push(stu)
+      teachsTemp.splice(rand, 1)
+      notFull = false
     }
-  }
+  })
+  studentsB.forEach((stu) => {
+    let notFull = true
+    while (notFull) {
+      if (teachsTemp.length == 0) {
+        teachsTemp.push(...teachersR.value)
+      }
+      let rand = Math.floor(Math.random() * teachsTemp.length)
+      const teacher = teachsTemp[rand]
+      if (teacher.B == 0 || teacher.levelB?.length == teacher.B) {
+        teachsTemp.splice(rand, 1)
+        continue
+      }
+      teacher.levelB?.push(stu)
+      teachsTemp.splice(rand, 1)
+      notFull = false
+    }
+  })
+  studentsC.forEach((stu) => {
+    let notFull = true
+    while (notFull) {
+      if (teachsTemp.length == 0) {
+        teachsTemp.push(...teachersR.value)
+      }
+      let rand = Math.floor(Math.random() * teachsTemp.length)
+      const teacher = teachsTemp[rand]
+      if (teacher.C == 0 || teacher.levelC?.length == teacher.C) {
+        teachsTemp.splice(rand, 1)
+        continue
+      }
+      teacher.levelC?.push(stu)
+      teachsTemp.splice(rand, 1)
+      notFull = false
+    }
+  })
+}
 
-  studentsTR.value.length = 0
+// ----------------
+const submitF = async () => {
   teachersR.value.forEach((teach) => {
-    studentsAmount.value += teach.levelA?.length! + teach.levelB?.length! + teach.levelC?.length!
     teach.levelA?.forEach((stu) => {
       studentsTR.value.push({
         name: stu.name,
@@ -122,10 +131,6 @@ const randomF = () => {
       })
     })
   })
-}
-
-// ----------------
-const submitF = async () => {
   await TeacherService.updateStudentsService(studentsTR.value)
   createElNotificationSuccess('学生分配提交成功')
 }
@@ -169,8 +174,5 @@ const exportStudents = () => {
       </template>
       <br />
     </el-col>
-    <!-- <el-col class="my-col">
-      <GroupingView :students="studentsTR" :teachers="allTeachersR" />
-    </el-col> -->
   </el-row>
 </template>
