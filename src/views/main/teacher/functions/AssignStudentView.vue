@@ -43,67 +43,42 @@ allTeachersR.value.forEach((teach) => {
   teachersR.value.push(temp)
 })
 
+//
+const studentsA = allStudentsR.value.slice(0, totalA)
+const studentsB = allStudentsR.value.slice(totalA, allStudentsR.value.length - totalC)
+const studentsC = allStudentsR.value.slice(allStudentsR.value.length - totalC)
+
+const availableTeachers = [...teachersR.value]
+
+const assignStudents = (students: User[], level: 'A' | 'B' | 'C') => {
+  students.forEach((stu) => {
+    let notFull = true
+    while (notFull) {
+      if (availableTeachers.length === 0) {
+        availableTeachers.push(...teachersR.value)
+      }
+      const randIndex = Math.floor(Math.random() * availableTeachers.length)
+      const teacher = availableTeachers[randIndex]
+
+      availableTeachers.splice(randIndex, 1)
+
+      if (teacher[level]! > 0 && teacher[`level${level}`]?.length! < teacher[level]!) {
+        teacher[`level${level}`]?.push(stu)
+        notFull = false
+      }
+    }
+  })
+}
+
 const randomF = () => {
-  const studentsA = allStudentsR.value.slice(0, totalA)
-  const studentsB = allStudentsR.value.slice(totalA, allStudentsR.value.length - totalC)
-  const studentsC = allStudentsR.value.slice(allStudentsR.value.length - totalC)
   teachersR.value.forEach((teach) => {
     teach.levelA = []
     teach.levelB = []
     teach.levelC = []
   })
-  const teachsTemp: TeacherTemp[] = []
-  studentsA.forEach((stu) => {
-    let notFull = true
-    while (notFull) {
-      if (teachsTemp.length == 0) {
-        teachsTemp.push(...teachersR.value)
-      }
-      let rand = Math.floor(Math.random() * teachsTemp.length)
-      const teacher = teachsTemp[rand]
-      if (teacher.A == 0 || teacher.levelA?.length == teacher.A) {
-        teachsTemp.splice(rand, 1)
-        continue
-      }
-      teacher.levelA?.push(stu)
-      teachsTemp.splice(rand, 1)
-      notFull = false
-    }
-  })
-  studentsB.forEach((stu) => {
-    let notFull = true
-    while (notFull) {
-      if (teachsTemp.length == 0) {
-        teachsTemp.push(...teachersR.value)
-      }
-      let rand = Math.floor(Math.random() * teachsTemp.length)
-      const teacher = teachsTemp[rand]
-      if (teacher.B == 0 || teacher.levelB?.length == teacher.B) {
-        teachsTemp.splice(rand, 1)
-        continue
-      }
-      teacher.levelB?.push(stu)
-      teachsTemp.splice(rand, 1)
-      notFull = false
-    }
-  })
-  studentsC.forEach((stu) => {
-    let notFull = true
-    while (notFull) {
-      if (teachsTemp.length == 0) {
-        teachsTemp.push(...teachersR.value)
-      }
-      let rand = Math.floor(Math.random() * teachsTemp.length)
-      const teacher = teachsTemp[rand]
-      if (teacher.C == 0 || teacher.levelC?.length == teacher.C) {
-        teachsTemp.splice(rand, 1)
-        continue
-      }
-      teacher.levelC?.push(stu)
-      teachsTemp.splice(rand, 1)
-      notFull = false
-    }
-  })
+  assignStudents(studentsA, 'A')
+  assignStudents(studentsB, 'B')
+  assignStudents(studentsC, 'C')
 }
 
 // ----------------
