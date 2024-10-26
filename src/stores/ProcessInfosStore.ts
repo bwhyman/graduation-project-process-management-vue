@@ -1,14 +1,14 @@
 import type { ProcessFile, ProcessScore } from '@/types'
 
-const porcessFilesS = ref<ProcessFile[]>()
-const processScoresS = ref<ProcessScore[]>()
+const porcessFilesMapS = ref<Map<string, ProcessFile[]>>(new Map())
+const processScoresMapS = ref<Map<string, ProcessScore[]>>(new Map())
 const allProcessScoresS = ref<ProcessScore[]>()
 const groupProcessScoresS = ref<ProcessScore[]>()
 const clear = () => {
   groupProcessScoresS.value = undefined
-  processScoresS.value = undefined
+  processScoresMapS.value.clear()
   allProcessScoresS.value = undefined
 }
-const store = { processScoresS, allProcessScoresS, porcessFilesS, groupProcessScoresS, clear }
+const store = { processScoresMapS, allProcessScoresS, porcessFilesMapS, groupProcessScoresS, clear }
 
 export const useProcessInfosStore = () => store

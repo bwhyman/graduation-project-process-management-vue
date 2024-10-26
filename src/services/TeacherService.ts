@@ -13,7 +13,7 @@ import type {
   StudentAttach,
   User
 } from '@/types'
-import { ELLoading, StoreCache, StoreClear } from './Decorators'
+import { ELLoading, StoreCache, StoreClear, StoreMapCache } from './Decorators'
 
 const TEACHER = 'teacher'
 
@@ -45,29 +45,26 @@ export class TeacherService {
   }
 
   // 加载指定过程评分
-  @StoreCache(processInfosStore.processScoresS)
+  @StoreMapCache(processInfosStore.processScoresMapS)
   @ELLoading()
-  static async listProcessesProcessScoresService(pid: string, auth: string) {
-    const data = await useGet<ProcessScore[]>(`${TEACHER}/processes/${pid}/types/${auth}`)
-    return data as unknown as Ref<ProcessScore[]>
+  static async listProcessScoresService(pid: string, auth: string) {
+    return await useGet<ProcessScore[]>(`${TEACHER}/processes/${pid}/types/${auth}`)
   }
 
   // 添加评分
-  @StoreClear(processInfosStore.clear)
-  @StoreCache(processInfosStore.processScoresS)
   @ELLoading()
-  static async addPorcessScoreService(ps: ProcessScore, auth: string) {
+  @StoreClear(processInfosStore.clear)
+  @StoreMapCache(processInfosStore.processScoresMapS, [0, 1])
+  static async addPorcessScoreService(pid: string, auth: string, ps: ProcessScore) {
     // @ts-ignore
     ps.detail = JSON.stringify(ps.detail)
-    const data = await usePost<ProcessScore[]>(`${TEACHER}/processscores/types/${auth}`, ps)
-    return data as unknown as Ref<ProcessScore[]>
+    return await usePost<ProcessScore[]>(`${TEACHER}/processscores/types/${auth}`, ps)
   }
 
   //
-  @StoreCache(processInfosStore.porcessFilesS)
+  @StoreMapCache(processInfosStore.porcessFilesMapS)
   static async listPorcessFilesService(pid: string, auth: string) {
-    const data = await useGet<ProcessFile[]>(`${TEACHER}/processfiles/${pid}/types/${auth}`)
-    return data as unknown as Ref<ProcessFile[]>
+    return await useGet<ProcessFile[]>(`${TEACHER}/processfiles/${pid}/types/${auth}`)
   }
 
   // 获取全部教师

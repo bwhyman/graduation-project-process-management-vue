@@ -3,7 +3,7 @@ import router from '@/router'
 import { CommonService } from '@/services'
 import { TeacherService } from '@/services/TeacherService'
 import type { ProcessFile, StudentAttach } from '@/types'
-import { Brush, Box } from '@element-plus/icons-vue'
+import { Box, Brush } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const result = await Promise.all([
@@ -29,9 +29,10 @@ watch(
     const selectProcess = processesS.find((p) => p.id == route.params?.pid)
     if (!selectProcess) return
     studentAttachsR.value = selectProcess.studentAttach!
-    processFilesR.value = (
-      await TeacherService.listPorcessFilesService(selectProcess?.id!, selectProcess?.auth!)
-    ).value
+    processFilesR.value = await TeacherService.listPorcessFilesService(
+      selectProcess?.id!,
+      selectProcess?.auth!
+    )
   },
   { immediate: true }
 )

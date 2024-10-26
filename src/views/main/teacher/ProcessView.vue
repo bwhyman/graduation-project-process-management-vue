@@ -25,7 +25,7 @@ const result = await Promise.all([
   params.auth == PA_REVIEW
     ? TeacherService.listGroupStudentsService()
     : TeacherService.listTutorStudentsService(),
-  TeacherService.listProcessesProcessScoresService(params.pid, params.auth),
+  TeacherService.listProcessScoresService(params.pid, params.auth),
   TeacherService.listPorcessFilesService(params.pid, params.auth),
   CommonService.listProcessesService()
 ])
@@ -42,8 +42,8 @@ const levelCount = ref<LevelCount>({
 })
 const currentPStudentsR = ref<StudentProcessScore[]>([])
 
-collectPS(result[1].value)
-processFilesR.value = result[2].value
+collectPS(result[1])
+processFilesR.value = result[2]
 
 // 聚合评分数据
 function collectPS(pses: ProcessScore[]) {
@@ -102,8 +102,9 @@ function collectPS(pses: ProcessScore[]) {
 //
 const currentProcessAttach = processesS.value.find((ps) => ps.id == params.pid)?.studentAttach
 // ---------------------
-const addProcessScoreF = (ps: ProcessScore) => {
-  TeacherService.addPorcessScoreService(ps, params.auth).then((pses) => collectPS(pses.value))
+const addProcessScoreF = async (ps: ProcessScore) => {
+  const result = await TeacherService.addPorcessScoreService(params.pid, params.auth, ps)
+  collectPS(result)
 }
 
 //
