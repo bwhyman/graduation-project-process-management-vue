@@ -8,7 +8,7 @@ import {
 } from '@/services/StudentService'
 import { useUserStore } from '@/stores/UserStore'
 import type { Process, ProcessFile, StudentAttach } from '@/types'
-import { Check, GoldMedal, WarningFilled } from '@element-plus/icons-vue'
+import { GoldMedal, UploadFilled, WarningFilled } from '@element-plus/icons-vue'
 const route = useRoute()
 let params = route.params as { pid: string }
 
@@ -109,7 +109,7 @@ const uploadF = async () => {
             </el-icon>
           </td>
           <td>
-            <el-button @click="activeF(attach)" type="primary">{{ attach.name }}</el-button>
+            <el-button @click="activeF(attach)" type="primary">选择{{ attach.name }}</el-button>
           </td>
           <td>
             {{ attach.description }}
@@ -119,7 +119,11 @@ const uploadF = async () => {
 
       <input type="file" ref="fileInputR" hidden :accept="selectAttachR?.ext" @change="changeF" />
       <div v-if="visableSubmitR">
-        <el-button type="success" @click="uploadF" :icon="Check" style="margin-right: 10px" />
+        <el-button
+          type="success"
+          @click="uploadF"
+          :icon="UploadFilled"
+          style="margin-right: 10px; padding: 4px 10px; font-size: 22px" />
         <span>{{ fileR?.name }}</span>
       </div>
     </el-col>

@@ -12,5 +12,6 @@
   "vue.updateImportsOnFileMove.enabled": true,
   "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
-  "editor.suggest.snippetsPreventQuickSuggestions": false
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  "typescript.tsdk": "node_modules\\typescript\\lib"
 }
