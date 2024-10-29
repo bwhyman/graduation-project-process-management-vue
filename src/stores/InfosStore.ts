@@ -1,9 +1,9 @@
 import type { Student, Teacher } from '@/types'
 
 // 基于过程分组学生
-const groupStudentsS = ref<Student[]>()
-const groupTeachersS = ref<Teacher[]>()
-const tutortudentsS = ref<Student[]>()
+const groupStudentsS = shallowRef<Student[]>()
+const groupTeachersS = shallowRef<Teacher[]>()
+const tutortudentsS = shallowRef<Student[]>()
 const clear = () => {
   groupStudentsS.value = undefined
   groupTeachersS.value = undefined

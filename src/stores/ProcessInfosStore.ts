@@ -1,9 +1,9 @@
 import type { ProcessFile, ProcessScore } from '@/types'
 
-const porcessFilesMapS = ref<Map<string, ProcessFile[]>>(new Map())
-const processScoresMapS = ref<Map<string, ProcessScore[]>>(new Map())
-const allProcessScoresS = ref<ProcessScore[]>()
-const groupProcessScoresS = ref<ProcessScore[]>()
+const porcessFilesMapS = shallowRef<Map<string, ProcessFile[]>>(new Map())
+const processScoresMapS = shallowRef<Map<string, ProcessScore[]>>(new Map())
+const allProcessScoresS = shallowRef<ProcessScore[]>()
+const groupProcessScoresS = shallowRef<ProcessScore[]>()
 const clear = () => {
   groupProcessScoresS.value = undefined
   processScoresMapS.value.clear()

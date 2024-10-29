@@ -1,22 +1,29 @@
 <script setup lang="ts">
 import { CommonService } from '@/services'
-const menus = [
-  {
-    name: '学生',
-    path: '/teacher'
-  }
-]
+const menus = ref<{ name: string; path: string }[]>([])
 
 const processesS = await CommonService.listProcessesService()
-processesS.value.forEach((ps) => {
-  menus.push({ name: ps.name!, path: `/teacher/processes/${ps.id}/types/${ps.auth}` })
-})
+watch(
+  processesS,
+  () => {
+    menus.value.length = 0
+    menus.value.push({
+      name: '学生',
+      path: '/teacher'
+    })
+    processesS.value.forEach((ps) => {
+      menus.value.push({ name: ps.name!, path: `/teacher/processes/${ps.id}/types/${ps.auth}` })
+    })
+  },
+  { immediate: true }
+)
+
 const route = useRoute()
 const activeIndexR = ref('')
 watch(
   route,
   () => {
-    const p = menus.find((mn) => mn.path == route.path)
+    const p = menus.value.find((mn) => mn.path == route.path)
     activeIndexR.value = p?.path ?? ''
   },
   { immediate: true }
