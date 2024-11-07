@@ -21,7 +21,7 @@ const currentTeacherScore = props.student.psTeachers?.find((t) => t.teacherId ==
 const scoreInfoR = ref<ProcessScore>({})
 const psDetailR = ref<PSDetail>({})
 if (currentTeacherScore) {
-  psDetailR.value = JSON.parse(JSON.stringify(toRaw(currentTeacherScore)))
+  psDetailR.value = JSON.parse(JSON.stringify(currentTeacherScore))
 } else {
   psDetailR.value.score = 0
   psDetailR.value.detail = []
