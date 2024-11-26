@@ -13,11 +13,7 @@ export function StoreCache(dataR: Ref<any>, replace = false) {
     descriptor.value = async (...args: any[]) => {
       const val = dataR.value
       // 响应式对象存在，直接返回
-      if (
-        !replace &&
-        (Object.prototype.toString.call(val) === '[object Array]' ||
-          Object.prototype.toString.call(val) === '[object Object]')
-      ) {
+      if (!replace && val) {
         return Promise.resolve(dataR)
       }
       // 异步执行目标方法并将结果置于store
@@ -38,8 +34,7 @@ export function StoreMapCache(dataR: Ref<Map<any, any>>, indexs?: number[]) {
   return (_: any, __: string, descriptor: PropertyDescriptor) => {
     const originalMethod = descriptor.value
     descriptor.value = async (...args: any[]) => {
-      const val = dataR.value as Map<any, any>
-      // if store is Map
+      const val = dataR.value
       let mapKey = args.join('-')
       if (indexs) {
         const temp = []
@@ -50,7 +45,7 @@ export function StoreMapCache(dataR: Ref<Map<any, any>>, indexs?: number[]) {
       }
       const mapValue = val.get(mapKey)
       // 响应式对象存在，直接返回
-      if (Object.prototype.toString.call(val) === '[object Map]' && mapValue) {
+      if (mapValue) {
         return Promise.resolve(mapValue)
       }
       // 响应式对象不存在。异步执行目标方法并将结果置于store
