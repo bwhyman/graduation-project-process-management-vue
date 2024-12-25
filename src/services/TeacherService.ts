@@ -11,6 +11,7 @@ import type {
   ProcessScore,
   Progress,
   StudentAttach,
+  StudentDTO,
   User
 } from '@/types'
 import { ELLoading, StoreCache, StoreClear, StoreMapCache } from './Decorators'
@@ -175,12 +176,30 @@ export class TeacherService {
   @StoreClear(infosStore.clear)
   @StoreCache(usersStore.allStudentsS, true)
   @ELLoading()
-  static async updateStudentsService(students: User[]) {
+  static async updateStudentsTeachersService(students: User[]) {
     students.forEach((stu) => {
       //@ts-ignore
       stu.student && (stu.student = JSON.stringify(stu.student))
     })
-    const data = await usePatch<User[]>(`${TEACHER}/students`, students)
+    const data = await usePatch<User[]>(`${TEACHER}/students/teachers`, students)
+    return data as unknown as Ref<User[]>
+  }
+
+  // 更新学生信息
+  @StoreClear(infosStore.clear)
+  @StoreCache(usersStore.allStudentsS, true)
+  @ELLoading()
+  static async updateStudentsGroupsService(students: StudentDTO[]) {
+    const data = await usePatch<User[]>(`${TEACHER}/students/groups`, students)
+    return data as unknown as Ref<User[]>
+  }
+
+  // 更新学生信息
+  @StoreClear(infosStore.clear)
+  @StoreCache(usersStore.allStudentsS, true)
+  @ELLoading()
+  static async updateStudentsProjectsService(students: StudentDTO[]) {
+    const data = await usePatch<User[]>(`${TEACHER}/students/projecttitles`, students)
     return data as unknown as Ref<User[]>
   }
 

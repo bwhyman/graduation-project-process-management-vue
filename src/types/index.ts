@@ -21,6 +21,13 @@ export interface Student {
   projectTitle?: string
 }
 
+export interface StudentDTO {
+  number?: string
+  groupNumber?: number
+  queueNumber?: number
+  projectTitle?: string
+}
+
 export interface Teacher {
   total?: number
   A?: number

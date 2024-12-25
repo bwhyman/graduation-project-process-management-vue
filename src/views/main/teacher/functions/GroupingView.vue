@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { createElNotificationSuccess } from '@/components/message'
 import { TeacherService } from '@/services/TeacherService'
-import type { Student, User } from '@/types'
+import type { Student, StudentDTO, User } from '@/types'
 import { Check } from '@element-plus/icons-vue'
 import type { TabsPaneContext } from 'element-plus'
 import { exportGroup } from './GroupingView'
@@ -170,15 +170,18 @@ const grouping = () => {
 
 // -----------
 const updateGroupF = async () => {
-  const students: User[] = []
+  const students: StudentDTO[] = []
   newStuGroupMap.value.forEach((value, key) => {
     for (let i = 0; i < value.students.length!; i++) {
-      const stuStudent = { ...value.students[i]?.student, queueNumber: i + 1 }
-      const stu: User = { number: value.students[i].number, groupNumber: key, student: stuStudent }
+      const stu: StudentDTO = {
+        number: value.students[i].number,
+        groupNumber: key,
+        queueNumber: i + 1
+      }
       students.push(stu)
     }
   })
-  await TeacherService.updateStudentsService(students)
+  await TeacherService.updateStudentsGroupsService(students)
   createElNotificationSuccess('更新学生分组成功')
 }
 //

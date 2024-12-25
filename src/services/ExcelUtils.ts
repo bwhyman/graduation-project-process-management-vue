@@ -1,4 +1,12 @@
-import type { PSDetail, Process, ProcessItem, ProcessScore, Student, User } from '@/types'
+import type {
+  PSDetail,
+  Process,
+  ProcessItem,
+  ProcessScore,
+  Student,
+  StudentDTO,
+  User
+} from '@/types'
 import * as XLSX from 'xlsx'
 
 // 读取学生表格
@@ -179,22 +187,19 @@ export function readStudentForSelectionFile(file: Blob) {
 }
 
 //
-export const readStudentsAllInfo = (file: Blob) => {
-  return new Promise<User[]>((resolve) => {
+export const readStudentsProjects = (file: Blob) => {
+  return new Promise<StudentDTO[]>((resolve) => {
     const reader = new FileReader()
-    const students: User[] = []
+    const students: StudentDTO[] = []
     reader.onload = (e: ProgressEvent<FileReader>) => {
       const data = e.target?.result
       const wb = XLSX.read(data, { type: 'binary' })
       const sheet = wb.Sheets[wb.SheetNames[0]]
       XLSX.utils.sheet_to_json(sheet).forEach((r: any) => {
         if (r['#']) {
-          const stu = { queueNumber: r['#'].toString(), projectTitle: r['题目'].toString() }
           students.push({
-            groupNumber: r['分组'],
-            name: r['姓名'],
             number: r['账号'].toString(),
-            student: stu
+            projectTitle: r['题目'].toString()
           })
         }
       })

@@ -21,7 +21,7 @@ const results = await Promise.all([
 ])
 const allTeachersR = results[0]
 const allStudentsR = results[1]
-const studentsTR = ref<User[]>([])
+const studentsTR: User[] = []
 const teachersR = ref<TeacherTemp[]>([])
 let totalA = 0
 let totalC = 0
@@ -85,28 +85,28 @@ const randomF = () => {
 const submitF = async () => {
   teachersR.value.forEach((teach) => {
     teach.levelA?.forEach((stu) => {
-      studentsTR.value.push({
+      studentsTR.push({
         name: stu.name,
         number: stu.number,
         student: { teacherId: teach.id, teacherName: teach.name }
       })
     })
     teach.levelB?.forEach((stu) => {
-      studentsTR.value.push({
+      studentsTR.push({
         name: stu.name,
         number: stu.number,
         student: { teacherId: teach.id, teacherName: teach.name }
       })
     })
     teach.levelC?.forEach((stu) => {
-      studentsTR.value.push({
+      studentsTR.push({
         name: stu.name,
         number: stu.number,
         student: { teacherId: teach.id, teacherName: teach.name }
       })
     })
   })
-  await TeacherService.updateStudentsService(studentsTR.value)
+  await TeacherService.updateStudentsTeachersService(studentsTR)
   createElNotificationSuccess('学生分配提交成功')
 }
 //
@@ -125,12 +125,14 @@ const exportStudents = () => {
     import('@/services/ExcelUtils').then(({ exportExcelFile }) => exportExcelFile(result))
   })
 }
+const disC = computed(() => teachersR.value[0].levelA?.length === teachersR.value[0].A)
 </script>
 <template>
   <el-row class="my-row">
+    <el-col class="my-col">提交分配，将清空分组/顺序/题目等信息。</el-col>
     <el-col class="my-col" :span="6">
       <el-button type="primary" @click="randomF">随机分配</el-button>
-      <el-button @click="submitF" type="success" :icon="Check"></el-button>
+      <el-button @click="submitF" type="success" :icon="Check" :disabled="!disC"></el-button>
     </el-col>
     <el-col class="my-col" :span="4">
       <el-button type="primary" @click="exportStudents">导出分配表格</el-button>
