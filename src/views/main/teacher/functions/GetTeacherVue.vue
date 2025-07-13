@@ -9,9 +9,7 @@ const teachersR = await TeacherService.listTeachersService()
 watch(
   () => props.tid,
   () => {
-    if (props.tid) {
-      teacherR.value = teachersR.value.find((t) => t.id === props.tid)
-    }
+    teacherR.value = teachersR.value.find((t) => t.id === props.tid)
   },
   { immediate: true }
 )

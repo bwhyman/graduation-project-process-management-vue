@@ -33,9 +33,11 @@ let login = async () => {
             placeholder="密码"
             :prefix-icon="Lock" />
         </div>
+
         <el-button type="primary" @click="login" :disabled="!user.number || !user.password">
           <el-icon><SwitchButton /></el-icon>
         </el-button>
+        <el-text type="danger" style="margin-left: 10px">默认账号密码均为学号</el-text>
       </el-card>
     </el-col>
   </el-row>

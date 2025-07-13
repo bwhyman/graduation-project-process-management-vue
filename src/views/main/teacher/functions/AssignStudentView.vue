@@ -51,7 +51,14 @@ const studentsC = allStudentsR.value.slice(allStudentsR.value.length - totalC)
 const availableTeachers = [...teachersR.value]
 
 const assignStudents = (students: User[], level: 'A' | 'B' | 'C') => {
-  students.forEach((stu) => {
+  for (const stu of students) {
+    // 如果学生已经有了导师，则直接分配到该导师
+    if (stu.student) {
+      const teacher = teachersR.value.find((t) => t.id === stu.student?.teacherId)
+      teacher && teacher[`level${level}`]?.push(stu)
+      continue
+    }
+    //
     let notFull = true
     while (notFull) {
       if (availableTeachers.length === 0) {
@@ -67,7 +74,7 @@ const assignStudents = (students: User[], level: 'A' | 'B' | 'C') => {
         notFull = false
       }
     }
-  })
+  }
 }
 
 const randomF = () => {

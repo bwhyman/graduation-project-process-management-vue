@@ -13,17 +13,17 @@ watch(
   () => findUserVueR.value?.user,
   () => {
     userR.value = JSON.parse(JSON.stringify(findUserVueR.value?.user))
-    userR.value?.student?.teacherId && (studentTid.value = userR.value?.student?.teacherId)
+    studentTid.value = userR.value?.student?.teacherId ?? ''
   }
 )
 
-// //
+//
 const updateStudentTeacherF = async () => {
   if (!userR.value?.id) return
-  if (userR.value.student) {
-    userR.value.student.teacherId = tutorR.value?.teacher.id
-    userR.value.student.teacherName = tutorR.value?.teacher.name
-  }
+  userR.value.student ??= {}
+  userR.value.student.teacherId = tutorR.value?.teacher.id
+  userR.value.student.teacherName = tutorR.value?.teacher.name
+
   await TeacherService.updateStudentService(userR.value)
   createElNotificationSuccess('更新导师成功')
   findUserVueR.value && (findUserVueR.value.user = {})

@@ -27,7 +27,7 @@ const submitF = async () => {
 </script>
 <template>
   <el-row class="my-row">
-    <el-col class="my-col">按模板，读取学生毕设题目：</el-col>
+    <el-col class="my-col">按模板，读取学生毕设题目：`#, 账号，题目`</el-col>
     <el-col class="my-col" :span="6">
       <input type="file" @change="readStu" />
     </el-col>
