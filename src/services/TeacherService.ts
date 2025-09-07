@@ -90,17 +90,19 @@ export class TeacherService {
       progress: { percentage: 0, title: name, rate: 0, total: 0, loaded: 0 }
     })
     const progNotif = createProgressNotification(progressR.value)
-    const resp = await axios.get(`${TEACHER}/download/${pname}`, {
-      responseType: 'blob',
-      onDownloadProgress(ProgressEvent) {
-        if (!ProgressEvent) return
-        progressR.value.progress.percentage = ProgressEvent.progress ?? 0
-        progressR.value.progress.rate = ProgressEvent.rate ?? 0
-        progressR.value.progress.loaded = ProgressEvent.loaded ?? 0
-        progressR.value.progress.total = ProgressEvent.total ?? 0
-      }
-    })
-    progNotif.close()
+    const resp = await axios
+      .get(`${TEACHER}/download/${pname}`, {
+        responseType: 'blob',
+        onDownloadProgress(ProgressEvent) {
+          if (!ProgressEvent) return
+          progressR.value.progress.percentage = ProgressEvent.progress ?? 0
+          progressR.value.progress.rate = ProgressEvent.rate ?? 0
+          progressR.value.progress.loaded = ProgressEvent.loaded ?? 0
+          progressR.value.progress.total = ProgressEvent.total ?? 0
+        }
+      })
+      .finally(() => progNotif.close())
+
     const filename = decodeURIComponent(resp.headers['filename'])
     const url = window.URL.createObjectURL(new Blob([resp.data]))
     const link = document.createElement('a')

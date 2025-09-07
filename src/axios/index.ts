@@ -48,9 +48,10 @@ const parseObject = (data: any) => {
 }
 
 axios.interceptors.response.use(
-  (resp) => {
-    if (resp.config.responseType == 'blob') {
-      return resp
+  async (resp) => {
+    if (resp.config.responseType === 'blob' && !resp.headers['content-disposition']) {
+      const text = await resp.data.text()
+      return Promise.reject(JSON.parse(text).message)
     }
 
     const data: ResultVO<{}> = resp.data
