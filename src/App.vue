@@ -1,13 +1,8 @@
-<script setup lang="ts">
-import LoadingVue from '@/components/LoadingVue.vue'
-</script>
+<script setup lang="ts"></script>
 <template>
   <suspense>
     <template #default>
       <RouterView />
-    </template>
-    <template #fallback>
-      <LoadingVue />
     </template>
   </suspense>
 </template>
@@ -17,14 +12,8 @@ import LoadingVue from '@/components/LoadingVue.vue'
   margin: 0;
   box-sizing: border-box;
 }
-
-body {
-  overflow-x: hidden;
-  width: 100vw;
-}
-/* el-dialog默认计算了滚动条 */
-.el-popup-parent--hidden {
-  width: 100% !important;
+html {
+  scrollbar-gutter: stable;
 }
 
 #app {
@@ -34,7 +23,6 @@ body {
   border-radius: 4px;
   margin: 0 auto;
   padding: 15px;
-  overflow: overlay;
 }
 
 .my-row {

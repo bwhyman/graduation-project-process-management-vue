@@ -187,7 +187,7 @@ export class TeacherService {
     return data as unknown as Ref<User[]>
   }
 
-  // 更新学生信息
+  // 更新学生信息，随机分组
   @StoreClear(infosStore.clear)
   @StoreCache(usersStore.allStudentsS, true)
   @ELLoading()
@@ -196,7 +196,7 @@ export class TeacherService {
     return data as unknown as Ref<User[]>
   }
 
-  // 更新学生信息
+  // 更新学生课设题目信息
   @StoreClear(infosStore.clear)
   @StoreCache(usersStore.allStudentsS, true)
   @ELLoading()

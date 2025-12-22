@@ -45,6 +45,9 @@ const updateStudentTeacherF = async () => {
         <el-form-item label="分组" style="width: 150px">
           <el-input type="number" v-model.number="userR.groupNumber" />
         </el-form-item>
+        <el-form-item label="顺序" style="width: 150px" v-if="userR.student?.queueNumber">
+          <el-input type="number" v-model.number="userR.student.queueNumber" />
+        </el-form-item>
         <el-form-item label="导师">
           <GetTeacherVue :tid="studentTid" ref="tutorR" />
         </el-form-item>
