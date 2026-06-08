@@ -8,7 +8,7 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.wordWrap": "on",
   "git.enableSmartCommit": true,
-  "workbench.colorTheme": "Default Light+",
+  "workbench.colorTheme": "Light+",
   "vue.updateImportsOnFileMove.enabled": true,
   "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,

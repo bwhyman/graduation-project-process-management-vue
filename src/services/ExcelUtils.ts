@@ -139,7 +139,8 @@ export const exportScoreExcelFile = (
         })
       })
       ;((p.items as ProcessItem[]) ?? []).forEach((item) => {
-        const x = ~~((scoreDetailMap.get(item.number!)! / processScoresT.length) * 100) / 100
+        let x = ~~((scoreDetailMap.get(item.number!)! / processScoresT.length) * 100) / 100
+        x = Math.round(x)
         row[`${item.name}(${item.point})`] = x
         if (p.items && p.items.length == 1) {
           finalScore += x * p.point! * 0.01
@@ -152,12 +153,15 @@ export const exportScoreExcelFile = (
         scoreDetailMap.forEach((value) => {
           temp += value
         })
-        const x = ~~((temp / processScoresT.length) * 100) / 100
+        let x = ~~((temp / processScoresT.length) * 100) / 100
+        x = Math.round(x)
         row[`${p.name}`] = x
         finalScore += x * p.point! * 0.01
       }
     })
-    row[`最终`] = ~~(finalScore * 100) / 100
+    finalScore = ~~(finalScore * 100) / 100
+    finalScore = Math.round(finalScore)
+    row[`最终`] = finalScore
     return row
   })
   const workBook = XLSX.utils.book_new()
